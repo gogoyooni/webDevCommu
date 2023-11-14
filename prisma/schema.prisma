@@ -1,0 +1,230 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id       String    @id @default(cuid())
+  name String
+  email    String
+  // password String
+  image         String?
+  githubUserName String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  posts               Post[]
+  comments            Comment[]
+  likes               Like[]
+  // sentInvitations     Notification[] @relation("SentInvitations")
+  // receivedInvitations Notification[] @relation("ReceivedInvitations")
+  sentNotifications     Notification[] @relation("SentNotifications")
+  receivedNotifications Notification[] @relation("ReceivedNotifications")
+  teams                Team[]
+  memberships         Membership[]
+  projectsAsLeader Project[] @relation("leader") // 리더로 있는 프로젝트
+  memberProjects  ProjectMembership[] @relation("member") // 멤버로 있는 프로젝트
+  applicants   ProjectApplication[]    @relation("applicant") // 지원한 프로젝트
+  
+}
+
+model Post {
+  id        String      @id @default(cuid())
+  title String
+  content   String
+
+  authorId       String
+  author         User           @relation(fields: [authorId], references: [id])
+  comments     Comment[]
+
+  likes        Like[]
+  notifications Notification[]
+   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  
+}
+
+model Comment {
+  id        String     @id @default(cuid())
+  content   String
+
+  // ... other comment fields
+  // depth Int?
+  motherCommentId String?
+  motherComment   Comment?  @relation("replies", fields: [motherCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies         Comment[] @relation("replies")
+  postId       String
+  post         Post           @relation(fields: [postId], references: [id])
+  authorId      String
+  author         User           @relation(fields: [authorId], references: [id])
+  likes        Like[]
+  notifications Notification[]
+  createdAt     DateTime  @default(now())
+}
+
+model Like {
+  id String @id @default(cuid())
+  // ... other like fields
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id])
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+}
+
+enum NotificationType {
+  LIKE_POST
+  LIKE_COMMENT
+  PENDING_INVITATION
+  // SEND_INVITATION
+  ACCEPT_INVITATION
+  REJECT_INVITATION
+  NEW_PROJECT
+  APPLICATION_RESULT
+}
+
+// enum ResultStatusType {
+//   ACCEPTED_END
+//   REJECTED_END
+// }
+
+model Notification {
+  id               String      @id @default(cuid())
+  notificationType NotificationType
+  // resultStatusType ResultStatusType
+  isRead           Boolean  @default(false)
+
+  senderUserId    String
+  senderUser      User @relation("SentNotifications", fields: [senderUserId], references: [id])
+  recipientUserId String
+  recipientUser   User @relation("ReceivedNotifications", fields: [recipientUserId], references: [id])
+
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id])
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+   
+  createdAt     DateTime  @default(now())
+}
+
+model Team {
+  id       String    @id @default(cuid())
+  teamName String @unique
+  description String?
+  goal String?
+  // ... other team fields
+
+  leaderUserId String
+  leaderUser   User           @relation(fields: [leaderUserId], references: [id])
+  members Membership[]
+  invitations  Notification[]
+   projects Project[]
+}
+
+// Add this new model for projects
+model Project {
+  id        String      @id @default(cuid())
+  title     String
+  content  String  @db.LongText
+  teamId    String
+  team      Team        @relation(fields: [teamId], references: [id])
+  leaderId  String
+  leader    User        @relation("leader", fields: [leaderId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+ 
+
+  // Connect projects to notifications if needed
+  notifications Notification[]
+  projectMemberships ProjectMembership[]
+  techStackId  String
+  techStacks ProjectTechStack[]
+  appliedProjects ProjectApplication[]
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model ProjectApplication { // 프로젝트 지원자 
+  id         String   @id @default(cuid())
+  applicantId     String 
+  projectId  String 
+  status     ApplicationStatus @default(PENDING)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  applicant       User    @relation("applicant",fields: [applicantId], references: [id])
+  appliedProject    Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([applicantId, projectId])
+}
+
+model TechStack {
+   id        String   @id @default(cuid())
+  technologies String  // Comma-separated string of technologies
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation to projects that use this tech stack
+  projects     ProjectTechStack[] // // Relation to associate projects with tech stacks
+ 
+}
+
+model ProjectTechStack {
+  id         String   @id @default(cuid())
+  projectId  String
+  techStackId String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  project    Project  @relation(fields: [projectId], references: [id])
+  techStack  TechStack @relation(fields: [techStackId], references: [id])
+}
+
+enum MemberType {
+  LEADER
+  MEMBER
+}
+
+model Membership {
+  id     String  @id @default(cuid())
+  userId String 
+  teamId String
+
+  userType MemberType @default(MEMBER)
+  member   User      @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  team      Team  @relation(fields: [teamId], references: [id])  
+
+  @@unique([userId, teamId]) // 여러 팀에 속할 순 있지만 같은 팀에 2번 이상 멤버를 못한다.
+}
+
+model ProjectMembership {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user     User     @relation("member",fields: [userId], references: [id])
+  project  Project  @relation(fields: [projectId], references: [id])
+}
