@@ -75,10 +75,10 @@ const Projects = ({ params }: { params: { userName: string } }) => {
   console.log(data);
 
   const projectsAsLeader = data?.response?.filter(
-    (project: any) => project.team.leaderUser.name === decodeURIComponent(userName)
+    (project: any) => project?.team?.leaderUser?.name === decodeURIComponent(userName)
   );
   const projectsAsMember = data?.response?.filter(
-    (project: any) => project.team.leaderUser.name !== decodeURIComponent(userName)
+    (project: any) => project?.team?.leaderUser?.name !== decodeURIComponent(userName)
   );
 
   console.log("project as leader:", projectsAsLeader);

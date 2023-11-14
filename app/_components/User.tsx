@@ -41,7 +41,14 @@ function User() {
               {/* <Link href={`/users/id/profile`}>{session?.user?.name}</Link> */}
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none"> {session?.user?.name}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {session?.user?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>

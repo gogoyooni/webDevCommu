@@ -7,6 +7,7 @@ import Providers from "./_components/QueryClientProvider";
 import Nav from "./_components/Nav";
 
 import { Toaster } from "@/components/ui/toaster";
+import SideNavigation from "./_components/SideNavigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +21,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
-          <Providers>
-            <Nav />
-            {children}
-            <Toaster />
-          </Providers>
-        </SessionProvider>
+        <div className="">
+          <SessionProvider session={session}>
+            <Providers>
+              <Nav />
+              <div className="flex">
+                <SideNavigation />
+                {children}
+              </div>
+              <Toaster />
+            </Providers>
+          </SessionProvider>
+        </div>
       </body>
     </html>
   );

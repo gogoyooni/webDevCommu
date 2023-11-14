@@ -14,6 +14,7 @@ function Logo() {
       <Link href={`/notification/${session?.user?.name}`}>Notification</Link>
       {/* <Link href={`/team`}>Team</Link> */}
       <Link href={`/user/${session?.user?.name}/team`}>My teams</Link>
+      <Link href={`/user/${session?.user?.name}/projects`}>My Projects</Link>
       <Link href={`/projects`}>Projects</Link>
       {/* <Link href={`/user/${session?.user?.name}/projects`}>My Projects</Link> */}
       <Link href={`/team/create`}>Create Team</Link>

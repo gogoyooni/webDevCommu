@@ -185,7 +185,7 @@ model TechStack {
   updatedAt DateTime @updatedAt
 
   // Relation to projects that use this tech stack
-  projects     ProjectTechStack[] // // Relation to associate projects with tech stacks
+  projects     ProjectTechStack[] // // Relation to associate projects  with tech stacks
  
 }
 

@@ -18,7 +18,12 @@ import {
 } from "react";
 import { ApplicationStatus } from "@prisma/client";
 
+import { format, formatDistanceToNow } from "date-fns";
+import ko from "date-fns/locale/ko";
+import parseISO from "date-fns/parseISO";
+
 const page = ({ params }: { params: { projectId: string } }) => {
+  const [dateTime, setDateTime] = useState<Date>();
   const { projectId } = params;
   const { data, error, isLoading } = useGetProject(projectId);
 
@@ -45,11 +50,25 @@ const page = ({ params }: { params: { projectId: string } }) => {
   //   }, 6000);
   // }, []);
   // console.log("contentHeight", contentHeight);
+  function foramtDate(date: any) {
+    const d = new Date(date);
+    const now = Date.now();
+    const diff = (now - d.getTime()) / 1000; // 현재 시간과의 차이(초)
+    if (diff < 60 * 1) {
+      // 1분 미만일땐 방금 전 표기
+      return "방금 전";
+    }
+    if (diff < 60 * 60 * 24 * 3) {
+      // 3일 미만일땐 시간차이 출력(몇시간 전, 몇일 전)
+      return formatDistanceToNow(d, { addSuffix: true, locale: ko });
+    }
+    return format(d, "PPP EEE p", { locale: ko }); // 날짜 포맷
+  }
 
-  const haveApplied = data?.response?.appliedProjects.filter(
+  const haveApplied = data?.response?.appliedProjects?.filter(
     (project: any) => project.applicant.name === session?.user?.name
   );
-  console.log("haveAPplied? :", haveApplied);
+  // console.log("haveAPplied? :", haveApplied);
 
   return (
     <div className="w-[1200px] mx-auto py-[100px]">
@@ -59,6 +78,7 @@ const page = ({ params }: { params: { projectId: string } }) => {
           <div className=" w-[750px]">
             <h2 className="text-2xl">{data?.response?.title}</h2>
             <h3 className="mt-2">글쓴이 겸 프로젝트 리더 : {data?.response?.leader?.name}</h3>
+            <p>{data?.response?.createdAt && foramtDate(data?.response?.createdAt)}</p>
             <p className="flex flex-wrap gap-3 mt-3">
               {data?.response?.techStacks
                 ?.map((tech: any) => tech.techStack.technologies)[0]
@@ -73,7 +93,7 @@ const page = ({ params }: { params: { projectId: string } }) => {
             <div
               ref={contentRef}
               className="border border-zinc-400 rounded-md p-5 mt-4"
-              dangerouslySetInnerHTML={{ __html: sanitize(data?.response.content) }}
+              dangerouslySetInnerHTML={{ __html: sanitize(data?.response?.content) }}
             ></div>
           </div>
         </div>
@@ -81,16 +101,17 @@ const page = ({ params }: { params: { projectId: string } }) => {
         <div className="">
           {/* <aside className="w-[340px] h-[350px] ml-5 sticky bg-sky-200 top-[20px] right-7"> */}
           <aside className="w-[340px] border-zinc-300 border-[1px] rounded-md sticky p-3 top-[20px]">
-            프로젝트 리더 : <span>프로젝트 리더 아이디- 지금 이 포스트 쓰는 사람..</span>
-            프로젝트 인원 : <span>프로젝트 인원 수</span>
+            {/* 프로젝트 리더 : <span>프로젝트 리더 아이디- 지금 이 포스트 쓰는 사람..</span>
+            프로젝트 인원 : <span>프로젝트 인원 수</span> */}
             <div className="w-full">
               <h3 className="text-lg">{data?.response?.title}</h3>
               <p className="">👉+👂🏻 {data?.response?.leader?.name}</p>
               {/* // todo 이거 나중에 좀 더 예쁘게 만들자 */}
-              <span>🧑🏻‍💻👩🏻‍💻 : {data?.response.team._count.members}</span>
+              <span>🧑🏻‍💻👩🏻‍💻 : {data?.response?.team?._count?.members}</span>
               <div className="flex my-2 items-center [&>*:nth-child(even)]:ml-[-10px]">
-                {data?.response.team.members.map((team: any) => (
+                {data?.response?.team?.members.map((team: any) => (
                   <Image
+                    key={team.member.id}
                     className="rounded-full "
                     alt="team member"
                     src={team.member.image}
