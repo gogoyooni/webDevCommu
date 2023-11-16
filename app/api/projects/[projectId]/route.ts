@@ -33,6 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: { projectId: s
       leader: {
         select: {
           name: true,
+          image: true,
         },
       },
       appliedProjects: {

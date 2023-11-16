@@ -21,6 +21,9 @@ import { ApplicationStatus } from "@prisma/client";
 import { format, formatDistanceToNow } from "date-fns";
 import ko from "date-fns/locale/ko";
 import parseISO from "date-fns/parseISO";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { cancelApplication } from "@/app/libs/api";
+import { toast } from "@/components/ui/use-toast";
 
 const page = ({ params }: { params: { projectId: string } }) => {
   const [dateTime, setDateTime] = useState<Date>();
@@ -36,6 +39,25 @@ const page = ({ params }: { params: { projectId: string } }) => {
     isError: applyForProjectHasError,
     isPending: applyForProjectIsPending,
   } = useCreateApplication(projectId);
+
+  const queryClient = useQueryClient();
+  // Mutations
+  const {
+    mutate: _cancelApplication,
+    isError: _cancelApplicationHasError,
+    isPending: _cancelApplicationIsPending,
+  } = useMutation({
+    mutationFn: (data: any) => cancelApplication(data, projectId),
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["project"] });
+
+      toast({
+        title: "Cancelled an application",
+        description: "You canceled the application for the project",
+      });
+    },
+  });
 
   const { data: session } = useSession(); //유저 로그인 안한 사람은 지원 버튼이 안보이게 해야겠다..
 
@@ -76,9 +98,25 @@ const page = ({ params }: { params: { projectId: string } }) => {
         <div className="">
           {/* <h3> 프로젝트 Id: {params.projectId}</h3> */}
           <div className=" w-[750px]">
+            <span className="text-sm text-muted-foreground">Project Name</span>
             <h2 className="text-2xl">{data?.response?.title}</h2>
-            <h3 className="mt-2">글쓴이 겸 프로젝트 리더 : {data?.response?.leader?.name}</h3>
-            <p>{data?.response?.createdAt && foramtDate(data?.response?.createdAt)}</p>
+            {/* <span className="text-sm text-muted-foreground">Writer</span> */}
+            <div className="flex gap-2 items-center mt-1">
+              <Image
+                key={data?.response?.leader.id}
+                className="rounded-full "
+                alt="Leader"
+                src={data?.response?.leader.image}
+                width={30}
+                height={30}
+              />
+              <h3 className=""> {data?.response?.leader?.name}</h3>
+            </div>
+
+            {/* <span className="text-sm text-muted-foreground">Date</span> */}
+            <p className="mt-2">
+              {data?.response?.createdAt && foramtDate(data?.response?.createdAt)}
+            </p>
             <p className="flex flex-wrap gap-3 mt-3">
               {data?.response?.techStacks
                 ?.map((tech: any) => tech.techStack.technologies)[0]
@@ -104,11 +142,14 @@ const page = ({ params }: { params: { projectId: string } }) => {
             {/* 프로젝트 리더 : <span>프로젝트 리더 아이디- 지금 이 포스트 쓰는 사람..</span>
             프로젝트 인원 : <span>프로젝트 인원 수</span> */}
             <div className="w-full">
+              <span className="text-sm text-muted-foreground">Project Name</span>
               <h3 className="text-lg">{data?.response?.title}</h3>
+              <span className="text-sm text-muted-foreground">Leader</span>
               <p className="">👉+👂🏻 {data?.response?.leader?.name}</p>
               {/* // todo 이거 나중에 좀 더 예쁘게 만들자 */}
-              <span>🧑🏻‍💻👩🏻‍💻 : {data?.response?.team?._count?.members}</span>
-              <div className="flex my-2 items-center [&>*:nth-child(even)]:ml-[-10px]">
+              <span className="text-sm text-muted-foreground">Members</span>
+              <p>{data?.response?.team?._count?.members}</p>
+              <div className="flex my-2 items-center [&>*:nth-child(even)]:ml-[-10px] [&>*:nth-child(even)]:z-10">
                 {data?.response?.team?.members.map((team: any) => (
                   <Image
                     key={team.member.id}
@@ -136,16 +177,16 @@ const page = ({ params }: { params: { projectId: string } }) => {
               ) ? (
                 <Button
                   onClick={() =>
-                    applyForProject({
+                    _cancelApplication({
                       // applicantId  어차피 api route에서 user 확인하기 떄문에 여기서 안넣어도됨
                       projectId,
-                      status: ApplicationStatus.PENDING,
+                      status: ApplicationStatus.CANCELLED,
                     })
                   }
-                  //   spinner={true}
+                  // spinner={true}
                   //    label="지원하기"
                   //    textSize="md"
-                  className="bg-blue-500 w-full"
+                  className="bg-red-500 w-full hover:bg-red-400"
                 >
                   {/* // To think about : Rejected된 사람은 지원을 못하게 할 것인지 아니면 재지원이 가능하게 할 것인지 */}
                   Cancel

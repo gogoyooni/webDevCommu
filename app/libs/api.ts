@@ -251,7 +251,7 @@ export async function cancelApplication(data: any, projectId: string) {
   // const { userName, teamName } = params;
   // return fetch(`${BASE_URL}/api/invitation/response`, {
   return fetch(`${BASE_URL}/api/projects/${projectId}/application`, {
-    method: "DELETE",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },

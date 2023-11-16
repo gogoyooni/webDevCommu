@@ -19,7 +19,7 @@ const page = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="bg-[#F5F5F5] w-screen h-screen">
+        <div className="bg-[#F5F5F5] w-full h-screen">
           <h3>프로젝트 리스트 페이지</h3>
 
           <div className="mx-auto w-[500px]  ">
