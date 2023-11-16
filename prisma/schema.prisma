@@ -137,6 +137,12 @@ model Team {
    projects Project[]
 }
 
+
+enum ProjectStatus {
+  PROGRESS
+  FINISHED
+}
+
 // Add this new model for projects
 model Project {
   id        String      @id @default(cuid())
@@ -149,7 +155,7 @@ model Project {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
  
-
+  status      ProjectStatus
   // Connect projects to notifications if needed
   notifications Notification[]
   projectMemberships ProjectMembership[]

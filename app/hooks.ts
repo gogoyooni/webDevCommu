@@ -445,6 +445,27 @@ export const useCreateApplication = (projectId: string) => {
   };
 };
 
+// @ DELETE - Cancel application for a proejct
+
+export const useCancelApplication = (projectId: string) => {
+  const queryClient = useQueryClient();
+  // Mutations
+  const { data, mutate, isError, isPending } = useMutation({
+    mutationFn: (data: any) => createApplication(data, projectId),
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["project"] });
+    },
+  });
+
+  return {
+    data,
+    mutate,
+    isError,
+    isPending,
+  };
+};
+
 // @ POST - Project application : accept an applicant for a proejct (leader만 accept 가능)
 // export const useAcceptApplication = (projectId: string) => {
 //   const queryClient = useQueryClient();

@@ -163,7 +163,7 @@ const page = ({
           style={{ height: "300px", maxHeight: "300px" }}
           // name="description"
           value={projectDescByQuill}
-          onChange={setProjectDescByQuill}
+          onChange={setProjectDescByQuill} // 이건 ref로 인풋 값 받는게 나을듯.. 리렌더링이 너무 심해서 느리다
           // getHTML
           // value={value} onChange={setValue}
         />

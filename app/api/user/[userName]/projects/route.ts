@@ -40,6 +40,7 @@ export async function GET(req: NextRequest, { params }: { params: { userName: st
             select: {
               id: true,
               name: true,
+              email: true,
               image: true,
               githubUserName: true,
             },

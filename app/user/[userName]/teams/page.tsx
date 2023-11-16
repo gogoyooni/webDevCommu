@@ -200,7 +200,7 @@ const page = () => {
                 <Link
                   className="bg-slate-950 text-white transition-colors rounded-md text-sm px-3 py-2 hover:bg-zinc-900"
                   // href={`/user/${session?.user?.name}/team/${membership.team.teamName}?userType=MEMBER&teamName=${membership.team.teamName}`}
-                  href={`/user/${session?.user?.name}/team/${membership.team.teamName}?userType=MEMBER`}
+                  href={`/user/${session?.user?.name}/teams/${membership.team.teamName}?userType=MEMBER`}
                 >
                   더 보기
                 </Link>
@@ -227,7 +227,7 @@ const page = () => {
             teamJoinedAsLeader?.map((org: any) => (
               <div key={org.teamId} className="flex">
                 <Link
-                  href={`/user/${session?.user?.name}/team/${org.team.teamName}?userType=LEADER`}
+                  href={`/user/${session?.user?.name}/teams/${org.team.teamName}?userType=LEADER`}
                   className="w-[30%] p-2"
                 >
                   {org.team.teamName}

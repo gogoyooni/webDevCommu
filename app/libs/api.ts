@@ -246,6 +246,19 @@ export async function createApplication(data: any, projectId: string) {
   }).then((res) => res.json());
 }
 
+// @ Project application - cancel application for a project
+export async function cancelApplication(data: any, projectId: string) {
+  // const { userName, teamName } = params;
+  // return fetch(`${BASE_URL}/api/invitation/response`, {
+  return fetch(`${BASE_URL}/api/projects/${projectId}/application`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
 // @ Project application - accept an applicant for a proejct (leader만 accept 가능)
 // export async function acceptApplication(data: any, projectId: string) {
 export async function acceptApplication(data: any) {

@@ -68,7 +68,7 @@ const page = ({ params }: { params: { projectId: string } }) => {
   const haveApplied = data?.response?.appliedProjects?.filter(
     (project: any) => project.applicant.name === session?.user?.name
   );
-  // console.log("haveAPplied? :", haveApplied);
+  console.log("haveAPplied? :", haveApplied);
 
   return (
     <div className="w-[1200px] mx-auto py-[100px]">
@@ -129,24 +129,45 @@ const page = ({ params }: { params: { projectId: string } }) => {
                 </p>
                 <div>여기 프로젝트 그룹 인원 맵함수로 리스트 보여주기</div>
               </div> */}
-              <Button
-                onClick={() =>
-                  applyForProject({
-                    // applicantId  어차피 api route에서 user 확인하기 떄문에 여기서 안넣어도됨
-                    projectId,
-                    status: ApplicationStatus.PENDING,
-                  })
-                }
-                //   spinner={true}
-                //    label="지원하기"
-                //    textSize="md"
-                className="bg-blue-500 w-full"
-              >
-                {/* // To think about : Rejected된 사람은 지원을 못하게 할 것인지 아니면 재지원이 가능하게 할 것인지 */}
-                {haveApplied?.length > 0 && haveApplied.status === ApplicationStatus.PENDING
-                  ? "Cancel"
-                  : "Apply"}
-              </Button>
+              {haveApplied?.length > 0 &&
+              haveApplied.find(
+                (applicant: any) =>
+                  applicant.applicant.name === session?.user?.name && applicant.status === "PENDING"
+              ) ? (
+                <Button
+                  onClick={() =>
+                    applyForProject({
+                      // applicantId  어차피 api route에서 user 확인하기 떄문에 여기서 안넣어도됨
+                      projectId,
+                      status: ApplicationStatus.PENDING,
+                    })
+                  }
+                  //   spinner={true}
+                  //    label="지원하기"
+                  //    textSize="md"
+                  className="bg-blue-500 w-full"
+                >
+                  {/* // To think about : Rejected된 사람은 지원을 못하게 할 것인지 아니면 재지원이 가능하게 할 것인지 */}
+                  Cancel
+                </Button>
+              ) : (
+                <Button
+                  onClick={() =>
+                    applyForProject({
+                      // applicantId  어차피 api route에서 user 확인하기 떄문에 여기서 안넣어도됨
+                      projectId,
+                      status: ApplicationStatus.PENDING,
+                    })
+                  }
+                  //   spinner={true}
+                  //    label="지원하기"
+                  //    textSize="md"
+                  className="bg-blue-500 w-full"
+                >
+                  {/* // To think about : Rejected된 사람은 지원을 못하게 할 것인지 아니면 재지원이 가능하게 할 것인지 */}
+                  Apply
+                </Button>
+              )}
             </div>
           </aside>
         </div>
