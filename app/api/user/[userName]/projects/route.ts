@@ -4,7 +4,7 @@ import prisma from "@/app/libs/prismadb";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/[...nextauth]/route";
-import { ApplicationStatus, MemberType, NotificationType } from "@prisma/client";
+import { ApplicationStatus, MemberType, NotificationType, ProjectStatus } from "@prisma/client";
 
 // @Project - Get Projects
 export async function GET(req: NextRequest, { params }: { params: { userName: string } }) {
@@ -181,3 +181,65 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ message: "SUCCESS", response: updatedApplication }, { status: 200 });
 }
+
+
+
+// @ Project - delete : delete a project
+// Status : PROGRESS / FINISHED / DELETED
+// export async function DELETE(req: NextRequest) {
+//   // const invitationId = params.invitationId;
+//   const { projectId, teamId } = await req.json();
+
+//   console.log("projectId:", projectId, "teamId: ", teamId);
+
+//   const session: any = await getServerSession(authOptions);
+//   if (!session.user) {
+//     return NextResponse.json({ message: "Not allowed" }, { status: 403 });
+//   }
+
+//   const user = await prisma.user.findFirst({
+//     where: {
+//       email: session?.user?.email,
+//     },
+//   });
+
+//   if (!user) {
+//     return NextResponse.json({ message: "User is not found" }, { status: 403 });
+//   }
+
+//   let projectResult;
+
+//   // Update project status to DELETED // deleted 상태로 바뀐 프로젝트를 지울 것인지 아닐 것인기 고민해봐야함
+//   projectResult = await prisma.project.update({
+//     where: {
+//       id: projectId,
+//     },
+//     data: {
+//       status: ProjectStatus.DELETED,
+//     },
+//   });
+
+//   // 팀 멤버들에게 notification 보내기
+//   const teamMembers = await prisma.membership.findMany({
+//     where: {
+//       teamId: teamId,
+//     },
+//     select: {
+//       userId: true,
+//     },
+//   });
+
+//   for (const member of teamMembers) {
+//     await prisma.notification.create({
+//       data: {
+//         notificationType: "PROJECT_STATUS_UPDATE",
+//         isRead: false,
+//         senderUserId: user.id,
+//         recipientUserId: member.userId,
+//         projectId: projectId,
+//       },
+//     });
+//   }
+
+//   return NextResponse.json({ message: "SUCCESS", response: projectResult }, { status: 200 });
+// }

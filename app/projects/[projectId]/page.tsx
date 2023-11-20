@@ -103,10 +103,10 @@ const page = ({ params }: { params: { projectId: string } }) => {
             {/* <span className="text-sm text-muted-foreground">Writer</span> */}
             <div className="flex gap-2 items-center mt-1">
               <Image
-                key={data?.response?.leader.id}
+                key={data?.response?.leader?.id}
                 className="rounded-full "
                 alt="Leader"
-                src={data?.response?.leader.image}
+                src={data?.response?.leader?.image}
                 width={30}
                 height={30}
               />

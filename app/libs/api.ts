@@ -220,12 +220,38 @@ export async function getMyProjects(userName: string) {
   }).then((res) => res.json());
 }
 
-// @ Project -  Create project
+// @ Project - Create: create project
 export async function createProject(data: any, params: { userName: string; teamName: string }) {
   const { userName, teamName } = params;
   // return fetch(`${BASE_URL}/api/invitation/response`, {
   return fetch(`${BASE_URL}/api/user/${userName}/team/${teamName}/projects`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+// @ Project - Update : change the status of project to FINISHED
+export async function finishProject(data: any) {
+  const { userName, teamName } = data;
+  // return fetch(`${BASE_URL}/api/invitation/response`, {
+  return fetch(`${BASE_URL}/api/user/${userName}/team/${teamName}/projects`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+// @ Project -  Delete :  delete a project
+export async function deleteProject(data: any) {
+  const { userName, teamName } = data;
+  // return fetch(`${BASE_URL}/api/invitation/response`, {
+  return fetch(`${BASE_URL}/api/user/${userName}/team/${teamName}/projects`, {
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },

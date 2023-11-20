@@ -15,7 +15,7 @@ const page = () => {
   const { data, error, isLoading } = useGetProjects();
 
   return (
-    <div>
+    <div className="w-full">
       {isLoading ? (
         <div>Loading...</div>
       ) : (

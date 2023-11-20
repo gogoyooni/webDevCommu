@@ -91,8 +91,9 @@ enum NotificationType {
   // SEND_INVITATION
   ACCEPT_INVITATION
   REJECT_INVITATION
-  NEW_PROJECT
-  APPLICATION_RESULT
+  NEW_PROJECT         // 리더가 새로운 프로젝트를 만들었을떄 팀원들에게 가는 타입
+  APPLICATION_RESULT  // 팀리더가 지원자들을 Accept/Reject했을때 가는 타입
+  PROJECT_STATUS_UPDATE // 팀 리더(= 프로젝트 리더)가 프로젝트 상태 업데이트할떄 가는 타입 
 }
 
 // enum ResultStatusType {
@@ -141,6 +142,7 @@ model Team {
 enum ProjectStatus {
   PROGRESS
   FINISHED
+  DELETED
 }
 
 // Add this new model for projects
@@ -155,7 +157,7 @@ model Project {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
  
-  status      ProjectStatus
+  status      ProjectStatus @default(PROGRESS)
   // Connect projects to notifications if needed
   notifications Notification[]
   projectMemberships ProjectMembership[]

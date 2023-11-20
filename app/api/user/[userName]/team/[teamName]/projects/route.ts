@@ -4,7 +4,7 @@ import prisma from "@/app/libs/prismadb";
 
 import { getServerSession } from "next-auth";
 
-import { MemberType, NotificationType } from "@prisma/client";
+import { MemberType, NotificationType, ProjectStatus } from "@prisma/client";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 // import { MemberType, NotificationType } from "@prisma/client";
 
@@ -227,4 +227,106 @@ export async function POST(req: NextRequest, { params }: { params: { teamName: s
     { message: "SUCCESS", response: newProject, notifications },
     { status: 200 }
   );
+}
+
+// @ Project - update status of a project as a leader
+// Status : PROGRESS / FINISHED
+export async function PATCH(req: NextRequest) {
+  // const invitationId = params.invitationId;
+  const { status, projectId, teamId } = await req.json();
+
+  console.log("projectId:", projectId, "teamId: ", teamId);
+
+  const session: any = await getServerSession(authOptions);
+  if (!session.user) {
+    return NextResponse.json({ message: "Not allowed" }, { status: 403 });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json({ message: "User is not found" }, { status: 403 });
+  }
+
+  let projectResult;
+
+  if (status === ProjectStatus.FINISHED) {
+    // 1. 프로젝트 status update -> FINISHED
+    // 2. 팀 멤버들에게도 notification
+
+    const projectResult = await prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        status: ProjectStatus.FINISHED, // "FINISHED"
+      },
+    });
+
+    // 팀 멤버들에게 notification 보내기
+    const teamMembers = await prisma.membership.findMany({
+      where: {
+        teamId: teamId,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    for (const member of teamMembers) {
+      await prisma.notification.create({
+        data: {
+          notificationType: "PROJECT_STATUS_UPDATE",
+          isRead: false,
+          senderUserId: user.id,
+          recipientUserId: member.userId,
+          projectId: projectId,
+        },
+      });
+    }
+
+    return NextResponse.json({ message: "SUCCESS", response: projectResult }, { status: 200 });
+  }
+
+  if (status === ProjectStatus.DELETED) {
+    // Update project status to DELETED
+    const projectResult = await prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        status: ProjectStatus.DELETED,
+      },
+    });
+
+    // 팀 멤버들에게 notification 보내기
+    const teamMembers = await prisma.membership.findMany({
+      where: {
+        teamId: teamId,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    for (const member of teamMembers) {
+      await prisma.notification.create({
+        data: {
+          notificationType: "PROJECT_STATUS_UPDATE",
+          isRead: false,
+          senderUserId: user.id,
+          recipientUserId: member.userId,
+          projectId: projectId,
+        },
+      });
+    }
+
+    return NextResponse.json({ message: "SUCCESS", response: projectResult }, { status: 200 });
+  }
+
+  return NextResponse.json({ message: "SUCCESS", response: projectResult }, { status: 200 });
 }
