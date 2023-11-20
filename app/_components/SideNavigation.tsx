@@ -24,8 +24,8 @@ const SideNavigation = () => {
   console.log("pathname:", pathname);
   return (
     // <aside className="absolute left-0 h-screen w-[70px]">
-    <aside className="h-screen w-[70px] pt-5 border-r-[1px] border-zinc-200">
-      <ul className="flex flex-col gap-2">
+    <aside className="min-h-screen max-h-full w-[70px] pt-5 border-r-[1px] border-zinc-200">
+      <ul className="flex flex-col gap-2 h-full">
         <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>

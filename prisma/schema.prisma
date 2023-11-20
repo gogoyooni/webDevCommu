@@ -35,6 +35,7 @@ model User {
   memberProjects  ProjectMembership[] @relation("member") // 멤버로 있는 프로젝트
   applicants   ProjectApplication[]    @relation("applicant") // 지원한 프로젝트
   
+  bookmarks    Bookmark[] 
 }
 
 model Post {
@@ -237,3 +238,21 @@ model ProjectMembership {
   user     User     @relation("member",fields: [userId], references: [id])
   project  Project  @relation(fields: [projectId], references: [id])
 }
+
+enum ItemType {
+  POST
+  PROJECT
+}
+
+model Bookmark {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id]) // 북마크한 유저
+  itemType  ItemType
+  itemId    String
+  createdAt DateTime @default(now())
+
+  // 유저가 한번만 특정 아이템만 북마크할 수 있게 인덱스 추가
+  @@unique([userId, itemType, itemId])
+}
+

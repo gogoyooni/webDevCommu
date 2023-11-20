@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <SessionProvider session={session}>
             <Providers>
               <Nav />
-              <div className="flex">
+              <div className="flex h-full">
                 <SideNavigation />
                 {children}
               </div>

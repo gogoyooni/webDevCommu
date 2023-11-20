@@ -126,7 +126,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
   console.log("project as member: ", projectsAsMember);
 
   return (
-    <div className="bg-[#F5F5F5] w-full h-screen">
+    <div className="bg-[#F5F5F5] w-full h-full pt-4 pb-9">
       {isLoading ? (
         <div>Loading...</div>
       ) : (
@@ -134,7 +134,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
           {/* <h3>{`/user/${decodeURIComponent(userName)}/projects`}</h3> */}
           <div className="mx-auto max-w-6xl">
             {/* // inner side Nav */}
-            <div className="p-2 mt-3 mb-2">
+            <div className="p-2 mb-2">
               <h3 className="text-2xl font-semibold">
                 {/* Hello, {session?.user?.name}!  */}
                 My Projects
