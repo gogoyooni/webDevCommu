@@ -1,16 +1,16 @@
 "use client";
 
-import { GrGroup } from "react-icons/gr";
-import { GoProjectRoadmap } from "react-icons/go";
-import { LuBell } from "react-icons/lu";
-import { LuFingerprint } from "react-icons/lu";
-import { LuFolderTree } from "react-icons/lu";
-import { LuLogOut } from "react-icons/lu";
-import { LuLogIn } from "react-icons/lu";
-import { LuUsers2 } from "react-icons/lu";
-import { LuKeyboard } from "react-icons/lu";
-import { LuHome } from "react-icons/lu";
-
+import {
+  LuBell,
+  LuFingerprint,
+  LuFolderTree,
+  LuLogOut,
+  LuLogIn,
+  LuUsers2,
+  LuKeyboard,
+  LuHome,
+  LuBook,
+} from "react-icons/lu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -147,6 +147,31 @@ const SideNavigation = () => {
               sideOffset={10}
             >
               <p>My Projects</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <li
+                className={`p-2 mx-auto rounded-lg transition-colors ease-in hover:bg-slate-200 ${
+                  pathname === `/user/${encodeURI(session?.user?.name as string)}/bookmarks`
+                    ? "bg-slate-200"
+                    : ""
+                }`}
+              >
+                <Link href={`/user/${session?.user?.name}/bookmarks`}>
+                  <LuBook className="w-[25px] h-[25px]" />
+                </Link>
+                {/* My Bookmarks */}
+              </li>
+            </TooltipTrigger>
+            <TooltipContent
+              className="border border-slate-300 bg-white text-black"
+              side="right"
+              sideOffset={10}
+            >
+              <p>My Bookmarks</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

@@ -20,11 +20,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import { LuStar, LuUserMinus2 } from "react-icons/lu";
+
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { deleteProject, finishProject } from "../libs/api";
+import { bookmark, deleteProject, finishProject } from "../libs/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { ProjectStatus } from "@prisma/client";
+import { ItemType, ProjectStatus } from "@prisma/client";
 
 const ProjectAction = ({
   data,
@@ -38,7 +41,7 @@ const ProjectAction = ({
     status: string;
   };
 }) => {
-  const { membership } = data;
+  const { membership, userName, projectId } = data;
 
   const queryClient = useQueryClient();
   // Mutations
@@ -75,6 +78,22 @@ const ProjectAction = ({
     },
   });
 
+  const {
+    mutate: _bookmark,
+    isError: _bookmarkHasError,
+    isPending: _bookmarkIsPending,
+  } = useMutation({
+    mutationFn: (data: any) => bookmark(data),
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["project"] });
+      toast({
+        title: "Bookmarked",
+        description: "You bookmarked the project",
+      });
+    },
+  });
+
   return (
     <div>
       <AlertDialog>
@@ -94,7 +113,21 @@ const ProjectAction = ({
               </DropdownMenuItem>
             )}
 
-            <DropdownMenuItem>Favorite</DropdownMenuItem>
+            {/* <DropdownMenuItem
+
+            onClick={() =>
+              bookmark({
+                userName,
+                itemId: projectId,
+                itemType: ItemType.PROJECT,
+              })
+            }
+            >
+               <div className="flex gap-2 items-center">
+                <LuStar className="w-4 h-4" />
+                <span>Bookmark</span>
+              </div>
+            </DropdownMenuItem> */}
 
             {membership === "LEADER" && (
               <AlertDialogTrigger asChild>

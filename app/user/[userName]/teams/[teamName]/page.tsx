@@ -8,54 +8,28 @@ import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, ChangeEventHandler, Suspense, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  MutableRefObject,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { sanitize, isSupported } from "isomorphic-dompurify";
-
-import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { changeStringToArray } from "@/lib/utils";
 import Link from "next/link";
+import TechStackCreator from "@/app/_components/TechStackCreator";
+import Loader from "@/app/_components/Loader";
+import { formats, modules } from "@/lib/constants";
 
-const QuillWrapper = dynamic(() => import("react-quill"), {
+const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
-  loading: () => <p>Loading ...</p>,
+  loading: () => <Loader className="w-6 h-6 animate-spin" />,
 });
-
-const modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ size: [] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-    ["link", "image", "video"],
-    ["clean"],
-  ],
-  clipboard: {
-    // toggle to add extra line breaks when pasting HTML:
-    matchVisual: false,
-  },
-};
-/*
- * Quill editor formats
- * See https://quilljs.com/docs/formats/
- */
-const formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-  "video",
-];
 
 const page = ({
   params,
@@ -85,22 +59,14 @@ const page = ({
     isPending: createProjectIsPending,
   } = useCreateProject(params);
 
-  const [projectData, setProjectData] = useState({
-    title: "",
-    // description: "",
-  });
+  const [projectTitle, setProjectTitle] = useState<string>("");
 
   const [projectDescByQuill, setProjectDescByQuill] = useState("");
-
   const [techStack, setTechStack] = useState<string[]>([]);
-  const [techValue, setTechValue] = useState("");
-
-  // console.log(projectDescByQuill);
 
   const onChangeSetTechValue = (e: any) => {
-    // console.log(e.target.value);
     console.log(e.target?.value);
-    // setTechValue(e.target.value);
+
     if (e.key === "Enter") {
       setTechStack((prev: string[]) => {
         return [...prev, e.target.value];
@@ -110,33 +76,26 @@ const page = ({
       }, 500);
     }
   };
-  console.log("techStack: ", techStack);
 
   const onChangeSetProject = (e: any) => {
-    // console.log(e.target.value);
-    setProjectData((prev) => {
-      return {
-        ...prev,
-        [e.target.name]: e.target.value,
-      };
-    });
+    setProjectTitle(e.target.value);
   };
-
-  // console.log("project data: ", data);
-  // console.log("cleaned version :", sanitize(projectDescByQuill));
 
   return (
     <div className="mx-auto w-[700px]">
       유저이름(리더): {decodeURIComponent(params.userName)}
       <h3>{decodeURIComponent(params.teamName)} 팀의 프로젝트 만들기</h3>
+      <span className="text-sm text-muted-foreground">Project name</span>
       <Input
-        value={projectData.title}
+        value={projectTitle}
         onChange={onChangeSetProject}
         className="mb-3"
         type="text"
         name="title"
       />
-      <div className="flex overflow-auto gap-3 mb-3">
+      <span className="text-sm text-muted-foreground">Libraries</span>
+      <TechStackCreator techStack={techStack} onChangeSetTechValue={onChangeSetTechValue} />
+      {/* <div className="flex overflow-auto gap-3 mb-3">
         {techStack?.length > 0 &&
           techStack?.map((tech, i) => (
             <span key={i} className="px-3 py-2 rounded-lg bg-green-400">
@@ -148,62 +107,47 @@ const page = ({
         onKeyDown={onChangeSetTechValue}
         className=" relative text-md border border-zinc-400 rounded-md w-[100%] p-2 mb-3"
         type="text"
-      />
-      {/* <Textarea
-        value={projectData.description}
-        onChange={onChangeSetProject}
-        className="mb-3"
-        name="description"
       /> */}
       <div className="mb-[100px]">
-        <QuillWrapper
+        <span className="text-sm text-muted-foreground">Content</span>
+        <ReactQuill
           theme="snow"
           modules={modules}
           formats={formats}
           style={{ height: "300px", maxHeight: "300px" }}
           // name="description"
           value={projectDescByQuill}
-          onChange={setProjectDescByQuill} // 이건 ref로 인풋 값 받는게 나을듯.. 리렌더링이 너무 심해서 느리다
-          // getHTML
-          // value={value} onChange={setValue}
+          onChange={setProjectDescByQuill}
         />
       </div>
       <Button
         disabled={createProjectIsPending}
         onClick={() => {
           createProject({
-            title: projectData.title,
+            title: projectTitle,
             content: projectDescByQuill,
             technologies: changeStringToArray(techStack),
             // teamName: decodeURIComponent(params.teamName),
             // userName: decodeURIComponent(params.userName),
           });
 
-          setProjectData({
-            title: "",
-            // description: "",
-          });
+          setProjectTitle("");
 
           toast({
             title: `You created a new project`,
-            // variant: "default",
           });
 
           setTimeout(() => {
             router.push("/");
           }, 1000);
-
-          // setTimeout(() => {
-          //   router.refresh();
-          // }, 1000);
         }}
       >
-        등록
+        Create
       </Button>
       {/* // 해당 팀의 프로젝트 */}
       <h3 className="text-2xl mt-3">프로젝트</h3>
       {searchParams.userType === "LEADER" ? (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loader />}>
           <div className="border border-zinc-400 rounded-md p-2 mt-2">
             <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
               <p className="">이름</p>
@@ -220,7 +164,7 @@ const page = ({
           </div>
         </Suspense>
       ) : (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loader />}>
           <div className="border border-zinc-400 rounded-md p-2 mt-2">
             <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
               <p className="">이름</p>

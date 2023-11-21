@@ -29,6 +29,7 @@ export async function GET(req: NextRequest, { params }: { params: { userName: st
     where: {
       OR: [
         { leaderId: user.id }, // 유저가 리더인지 체크
+        // { projectMemberships: { some: { userId: user.id } } }, // 유저가 프로젝트의 멤버인지 체크 -> 추후에 팀 멤버쉽을 유지하면서 프로젝트에서는 빠질 수 있도록 구현하기
         { team: { members: { some: { userId: user.id } } } }, // 유저가 멤버인지 체크
       ],
     },
@@ -64,6 +65,16 @@ export async function GET(req: NextRequest, { params }: { params: { userName: st
           },
         },
       }, // Include team information
+      projectMemberships: {
+        select: {
+          user: {
+            select: {
+              email: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -181,8 +192,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ message: "SUCCESS", response: updatedApplication }, { status: 200 });
 }
-
-
 
 // @ Project - delete : delete a project
 // Status : PROGRESS / FINISHED / DELETED

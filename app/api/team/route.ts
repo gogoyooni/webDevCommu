@@ -234,3 +234,107 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: error }, { status: 400 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { teamId }: { teamId: string } = await req.json();
+
+  const session: any = await getServerSession(authOptions);
+
+  if (!session.user) {
+    return NextResponse.json({ message: "Unauthenticated" }, { status: 401 });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: session?.user?.email,
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json({ message: "User is not found" }, { status: 403 });
+  }
+
+  //   let data;
+
+  try {
+    // 1. 유저가 리더로 있던 팀을 찾는다
+    const userTeam = await prisma.team.findFirst({
+      where: {
+        leaderUserId: user.id,
+      },
+      include: {
+        projects: true, // Include the associated projects
+        members: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    if (!userTeam) {
+      console.error("User is not a leader of any team.");
+      return NextResponse.json({ message: "User is not a leader of any team." }, { status: 400 });
+    }
+
+    // 2. 유저가 리더로 있던 팀과 관련된 프로젝트를 삭제한다
+    const deletedProjects = await prisma.project.deleteMany({
+      where: {
+        id: {
+          in: userTeam.projects.map((project) => project.id),
+        },
+      },
+    });
+
+    // 3. 팀 멤버들을 찾는다
+    const teamMembers = await prisma.membership.findMany({
+      where: {
+        teamId: teamId,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    // 4. 팀 멤버들에게 팀 삭제 사실을 notification 알린다.
+    const notificationPromises = teamMembers.map(async (member) => {
+      const createdNotification = await prisma.notification.create({
+        data: {
+          notificationType: "TEAM_DELETED",
+          isRead: false,
+          senderUserId: user.id,
+          recipientUserId: member.userId,
+          teamId: teamId,
+          // Include any other relevant information in the notification
+        },
+      });
+
+      return createdNotification;
+    });
+
+    const notifications = await Promise.all(notificationPromises);
+
+    // 5. 팀 멤버들의 멤버쉽을 삭제한다
+    const deletedMemberships = await prisma.membership.deleteMany({
+      where: {
+        userId: {
+          in: userTeam.members.map((member) => member.userId),
+        },
+      },
+    });
+
+    // 6: 팀을 삭제한다
+    const deletedTeam = await prisma.team.delete({
+      where: {
+        id: teamId,
+      },
+    });
+
+    console.log("Notifications to the remaining members ::", notifications);
+
+    return NextResponse.json({ message: "SUCCESS", response: deletedTeam }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: error }, { status: 400 });
+  }
+}

@@ -262,7 +262,6 @@ export async function deleteProject(data: any) {
 // @ Project application - apply for a project (create an application as a user)
 export async function createApplication(data: any, projectId: string) {
   // const { userName, teamName } = params;
-  // return fetch(`${BASE_URL}/api/invitation/response`, {
   return fetch(`${BASE_URL}/api/projects/${projectId}/application`, {
     method: "POST",
     headers: {
@@ -275,7 +274,6 @@ export async function createApplication(data: any, projectId: string) {
 // @ Project application - cancel application for a project
 export async function cancelApplication(data: any, projectId: string) {
   // const { userName, teamName } = params;
-  // return fetch(`${BASE_URL}/api/invitation/response`, {
   return fetch(`${BASE_URL}/api/projects/${projectId}/application`, {
     method: "POST",
     headers: {
@@ -286,11 +284,8 @@ export async function cancelApplication(data: any, projectId: string) {
 }
 
 // @ Project application - accept an applicant for a proejct (leader만 accept 가능)
-// export async function acceptApplication(data: any, projectId: string) {
 export async function acceptApplication(data: any) {
   const { userName, projectId } = data;
-  // return fetch(`${BASE_URL}/api/invitation/response`, {
-  // return fetch(`${BASE_URL}/api/user/${userName}/projects/${projectId}/application`, {
   return fetch(`${BASE_URL}/api/user/${userName}/projects`, {
     method: "POST",
     headers: {
@@ -303,9 +298,47 @@ export async function acceptApplication(data: any) {
 // @ Project application - accept an applicant for a proejct (leader만 reject 가능)
 export async function rejectApplication(data: any) {
   const { userName, projectId } = data;
-  // return fetch(`${BASE_URL}/api/invitation/response`, {
   return fetch(`${BASE_URL}/api/user/${userName}/projects`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+// @ Bookmark - accept an applicant for a proejct (leader만 reject 가능)
+export async function bookmark(data: any) {
+  const { userName } = data;
+  // return fetch(`${BASE_URL}/api/invitation/response`, {
+  return fetch(`${BASE_URL}/api/user/${userName}/bookmarks`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+// @ Membership - Quit a team where a user joined (DELETE data of membership)
+export async function quitTeam(data: any) {
+  const { userName } = data;
+
+  return fetch(`${BASE_URL}/api/user/${userName}/memberships`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+// @ Team - Delete a Team
+export async function deleteTeam(data: any) {
+  // const { userName } = data;
+
+  return fetch(`${BASE_URL}/api/team`, {
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
