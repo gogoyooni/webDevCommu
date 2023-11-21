@@ -26,131 +26,6 @@ export async function GET(req: NextRequest) {
 
   // let data;
   try {
-    // data = await prisma.user.findUnique({
-    //   where: {
-    //     id: user.id,
-    //   },
-    //   include: {
-    //     notifications: {
-    //       include: {
-    //         // toWhom: true,
-    //         doerLikedPost: {
-    //           select: {
-    //             user: {
-    //               // post를 like한 유저
-    //               select: {
-    //                 name: true,
-    //                 email: true,
-    //               },
-    //             },
-    //             post: {
-    //               select: {
-    //                 title: true,
-    //                 author: {
-    //                   select: {
-    //                     name: true,
-    //                     email: true,
-    //                   },
-    //                 },
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-    //   toWhom          User         @relation(fields: [toWhomId], references: [id])
-    // userLikedPostId String
-    // userLikedPost   UserLikePost @relation(fields: [userLikedPostId], references: [id], onDelete: Cascade)
-
-    // data = await prisma.user.findUnique({
-    //   // 이건 유저 테이블을 활용한 방법
-    //   where: {
-    //     id: user.id,
-    //   },
-    //   include: {
-    //     notifications: {
-    //       select: {
-    //         toWhom: {
-    //           select: {
-    //             name: true,
-    //             email: true,
-    //           },
-    //         },
-    //         userLikedPost: {
-    //           select: {
-    //             user: {
-    //               select: {
-    //                 name: true,
-    //                 email: true,
-    //               },
-    //             },
-    //             postId: true,
-    //             post: {
-    //               select: {
-    //                 title: true,
-    //               },
-    //             },
-    //           },
-    //         },
-    //         userLikedComment: {
-    //           select: {
-    //             user: {
-    //               select: {
-    //                 name: true,
-    //                 email: true,
-    //               },
-    //             },
-    //             commentId: true,
-    //             comment: {
-    //               select: {
-    //                 content: true,
-    //               },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-    // 다른 유저가 내 포스트나 댓글에 반을 보였을떄 받은 notifications만 가져옴
-    // const data = await prisma.notification.findMany({
-    //   where: {
-    //     recipientUserId: user.id,
-    //   },
-    //   include: {
-    //     post: {
-    //       select: {
-    //         content: true,
-    //         author: {
-    //           select: {
-    //             name: true,
-    //             email: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //     comment: {
-    //       select: {
-    //         author: {
-    //           select: {
-    //             name: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-    // data = await prisma.postNotification.findMany({
-    //   where: {
-    //     toWhomId: user.id,
-    //   },
-    // });
-
     const data = await prisma.user.findFirst({
       where: {
         id: user.id,
@@ -374,21 +249,9 @@ export async function POST(req: NextRequest) {
 
   //***** */ 초대 수락 시작
   if (notificationType === "ACCEPT_INVITATION") {
-    // const responseNoti = await prisma.notification.create({
-    //   data: {
-    //     senderUserId: user.id,
-    //     recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
-    //     notificationType: NotificationType.ACCEPT_INVITATION,
-    //     // teamId  -> invitation에 수락 /거절하는 것에 대답에 응하는 유저의 팀 아이디가 관계가 있나? 상관이 없는 것으로 간주. 그래서 사용 X
-    //   },
-    // });
-
     const responseNoti = await prisma.notification.update({
       where: {
         id: notificationId,
-        // senderUserId: senderId,
-        // recipientUserId: user.id,
-        // notificationType: NotificationType.ACCEPT_INVITATION,
       },
       data: {
         // senderUserId: user.id,
@@ -397,78 +260,6 @@ export async function POST(req: NextRequest) {
         // teamId  -> invitation에 수락 /거절하는 것에 대답에 응하는 유저의 팀 아이디가 관계가 있나? 상관이 없는 것으로 간주. 그래서 사용 X
       },
     });
-
-    // const invitationData = await prisma.invitation.findFirst({
-    //   where: {
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    // });
-
-    // if (!invitationData) {
-    //   return NextResponse.json(
-    //     {
-    //       message: "Team is not found",
-    //     },
-    //     { status: 404 }
-    //   );
-    // } // 원래 했던거
-
-    // const invitationFound = await prisma.invitation.findFirst({
-    //   where: {
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    // });
-    // if (!invitationFound) {
-    //   return NextResponse.json({ message: "Invitation is not found" }, { status: 404 });
-    // }
-
-    // const invitation = await prisma.invitation.update({
-    //   where: {
-    //     id: invitationFound.id,
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    //   data: {
-    //     status: responseType,
-    //   },
-    // });
-
-    // const inviteNoti = await prisma.inviteNotification.create({
-    //   data: {
-    //     notificationId: responseNoti.id,
-    //     invitationId: invitation.id,
-    //   },
-    // });
-
-    // const teamData = await prisma.team.findFirst({
-    //   where: {
-    //     id: senderTeamId, //Team의 아이디
-    //   },
-    //   select: {
-    //     name: true,
-    //     members: {
-    //       select: {
-    //         id: true,
-    //       },
-    //     },
-    //   },
-    //   //   include: {
-    //   //     members: {
-    //   //       include: {
-    //   //         member: true,
-    //   //       },
-    //   //     },
-    //   //   },
-    // });
-
-    // if (!teamData) {
-    //   return NextResponse.json({ message: "Team is not found" }, { status: 404 });
-    // }
 
     const createMembershipForNewMember = await prisma.membership.create({
       data: {
@@ -492,14 +283,6 @@ export async function POST(req: NextRequest) {
 
   //***** */ 초대 거절 시작
   if (notificationType === "REJECT_INVITATION") {
-    // const responseNoti = await prisma.notification.create({
-    //   data: {
-    //     senderUserId: senderId,
-    //     recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
-    //     notificationType: NotificationType.REJECT_INVITATION,
-    //   },
-    // });
-
     const responseNoti = await prisma.notification.update({
       where: {
         id: notificationId,
@@ -510,36 +293,6 @@ export async function POST(req: NextRequest) {
         notificationType: NotificationType.REJECT_INVITATION,
       },
     });
-
-    // const invitationFound = await prisma.invitation.findFirst({
-    //   where: {
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    // });
-    // if (!invitationFound) {
-    //   return NextResponse.json({ message: "Invitation is not found" }, { status: 404 });
-    // }
-
-    // const invitation = await prisma.invitation.update({
-    //   where: {
-    //     id: invitationFound.id,
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    //   data: {
-    //     status: responseType,
-    //   },
-    // });
-
-    // const inviteNoti = await prisma.inviteNotification.create({
-    //   data: {
-    //     notificationId: responseNoti.id,
-    //     invitationId: invitation.id,
-    //   },
-    // });
 
     return NextResponse.json(
       {
@@ -585,15 +338,6 @@ export async function PATCH(req: NextRequest) {
 
   //***** */ 초대 수락 시작
   if (notificationType === "ACCEPT_INVITATION") {
-    // const responseNoti = await prisma.notification.create({
-    //   data: {
-    //     senderUserId: user.id,
-    //     recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
-    //     notificationType: NotificationType.ACCEPT_INVITATION,
-    //     // teamId  -> invitation에 수락 /거절하는 것에 대답에 응하는 유저의 팀 아이디가 관계가 있나? 상관이 없는 것으로 간주. 그래서 사용 X
-    //   },
-    // });
-
     const responseNoti = await prisma.notification.update({
       where: {
         id: notificationId,
@@ -608,78 +352,6 @@ export async function PATCH(req: NextRequest) {
         // teamId  -> invitation에 수락 /거절하는 것에 대답에 응하는 유저의 팀 아이디가 관계가 있나? 상관이 없는 것으로 간주. 그래서 사용 X
       },
     });
-
-    // const invitationData = await prisma.invitation.findFirst({
-    //   where: {
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    // });
-
-    // if (!invitationData) {
-    //   return NextResponse.json(
-    //     {
-    //       message: "Team is not found",
-    //     },
-    //     { status: 404 }
-    //   );
-    // } // 원래 했던거
-
-    // const invitationFound = await prisma.invitation.findFirst({
-    //   where: {
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    // });
-    // if (!invitationFound) {
-    //   return NextResponse.json({ message: "Invitation is not found" }, { status: 404 });
-    // }
-
-    // const invitation = await prisma.invitation.update({
-    //   where: {
-    //     id: invitationFound.id,
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    //   data: {
-    //     status: responseType,
-    //   },
-    // });
-
-    // const inviteNoti = await prisma.inviteNotification.create({
-    //   data: {
-    //     notificationId: responseNoti.id,
-    //     invitationId: invitation.id,
-    //   },
-    // });
-
-    // const teamData = await prisma.team.findFirst({
-    //   where: {
-    //     id: senderTeamId, //Team의 아이디
-    //   },
-    //   select: {
-    //     name: true,
-    //     members: {
-    //       select: {
-    //         id: true,
-    //       },
-    //     },
-    //   },
-    //   //   include: {
-    //   //     members: {
-    //   //       include: {
-    //   //         member: true,
-    //   //       },
-    //   //     },
-    //   //   },
-    // });
-
-    // if (!teamData) {
-    //   return NextResponse.json({ message: "Team is not found" }, { status: 404 });
-    // }
 
     const createMembershipForNewMember = await prisma.membership.create({
       data: {
@@ -703,14 +375,6 @@ export async function PATCH(req: NextRequest) {
 
   //***** */ 초대 거절 시작
   if (notificationType === "REJECT_INVITATION") {
-    // const responseNoti = await prisma.notification.create({
-    //   data: {
-    //     senderUserId: senderId,
-    //     recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
-    //     notificationType: NotificationType.REJECT_INVITATION,
-    //   },
-    // });
-
     const responseNoti = await prisma.notification.update({
       where: {
         id: notificationId,
@@ -722,36 +386,6 @@ export async function PATCH(req: NextRequest) {
       },
     });
 
-    // const invitationFound = await prisma.invitation.findFirst({
-    //   where: {
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    // });
-    // if (!invitationFound) {
-    //   return NextResponse.json({ message: "Invitation is not found" }, { status: 404 });
-    // }
-
-    // const invitation = await prisma.invitation.update({
-    //   where: {
-    //     id: invitationFound.id,
-    //     senderId,
-    //     senderTeamId,
-    //     receiverId: user.id,
-    //   },
-    //   data: {
-    //     status: responseType,
-    //   },
-    // });
-
-    // const inviteNoti = await prisma.inviteNotification.create({
-    //   data: {
-    //     notificationId: responseNoti.id,
-    //     invitationId: invitation.id,
-    //   },
-    // });
-
     return NextResponse.json(
       {
         message: "SUCCESS/REJECTED",
@@ -762,6 +396,27 @@ export async function PATCH(req: NextRequest) {
     );
   }
   //***** */ 초대 거절 끝
+
+  if (notificationType === "CANCEL_INVITATION") {
+    const responseNoti = await prisma.notification.update({
+      where: {
+        senderUserId: user.id,
+        id: notificationId,
+      },
+      data: {
+        notificationType: NotificationType.CANCEL_INVITATION,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: "SUCCESS/CANCELLED",
+        notification: responseNoti,
+      },
+      { status: 200 }
+    );
+  }
+
   // } catch (error) {
   // console.log(error);
   // return NextResponse.json({ message: error }, { status: 400 });
@@ -769,39 +424,3 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ message: "SUCCESS" }, { status: 200 });
 }
-
-// @ Post - 포스트 게시물 수정? *** 이거 옮겨서 써야됨 !!!! 잊으며안됨
-// export async function PATCH(req: NextRequest) {
-//   const { motherCommentId, content, postId } = await req.json(); // 프론트단에서 이거 넣어줘야됨 나중에
-//   // const { content } = await req.json(); // 프론트단에서 이거 넣어줘야됨 나중에
-
-//   console.log("data:::", motherCommentId, content, postId);
-
-//   const session: any = await getServerSession(authOptions);
-
-//   if (!session.user) {
-//     return NextResponse.json({ message: "Not allowed" }, { status: 403 });
-//   }
-
-//   const user = await prisma.user.findFirst({
-//     where: {
-//       email: session?.user?.email,
-//     },
-//   });
-
-//   if (!user) {
-//     return NextResponse.json({ message: "User is not found" }, { status: 403 });
-//   }
-
-//   if (motherCommentId) {
-//     const data = await prisma.comment.create({
-//       data: {
-//         postId, //
-//         authorId: user.id,
-//         content,
-//         motherCommentId,
-//       },
-//     });
-//     return NextResponse.json({ data }, { status: 200 });
-//   }
-// }

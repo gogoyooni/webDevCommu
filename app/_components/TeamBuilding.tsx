@@ -49,11 +49,11 @@ const TeamBuilding = ({}: // createTeam,
 
   return (
     <div className="mx-auto w-[500px]">
-      <Label htmlFor="name">팀이름</Label>
+      <Label htmlFor="name">Team Name</Label>
       <Input onChange={onChangeSetTeamData} type="text" name="name" />
-      <Label htmlFor="description">팀 설명</Label>
+      <Label htmlFor="description">Description</Label>
       <Input onChange={onChangeSetTeamData} type="text" name="description" />
-      <Label htmlFor="goal">목표</Label>
+      <Label htmlFor="goal">Goal</Label>
       <Input onChange={onChangeSetTeamData} type="text" name="goal" />
       <Button
         disabled={createTeamIsPending}
@@ -65,7 +65,7 @@ const TeamBuilding = ({}: // createTeam,
         }}
         className="w-full mt-5"
       >
-        만들기
+        Create Team
       </Button>
     </div>
   );

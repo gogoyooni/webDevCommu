@@ -89,7 +89,7 @@ enum NotificationType {
   LIKE_POST
   LIKE_COMMENT
   PENDING_INVITATION
-  // SEND_INVITATION
+  CANCEL_INVITATION // 팀 리더가 유저에게 보낸 초대 취소할때
   ACCEPT_INVITATION
   REJECT_INVITATION
   NEW_PROJECT         // 리더가 새로운 프로젝트를 만들었을떄 팀원들에게 가는 타입

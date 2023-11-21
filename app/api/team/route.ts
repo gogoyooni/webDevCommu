@@ -31,117 +31,7 @@ export async function GET(req: NextRequest) {
   try {
     // 유저가 만든 팀 또는 속해있는 팀 가져오기..
 
-    // const teamUserJoined = await prisma.user.findUnique({
-    //   where: {
-    //     id: user.id,
-    //   },
-    //   include: {
-    //     membership: {
-    //       select: {
-    //         member: true,
-    //         userType: true,
-    //         team: true,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // const teamUserJoined = await prisma.team.findMany({ // 이건 유저가 리더인 팀만 나올 가능성인 높음..
-    //   where: {
-    //     leaderId: user.id,
-    //   },
-    //   include: {
-    //     membership: {
-    //       include: {
-    //         member: {
-    //           select: {
-    //             name: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-    // const teamUserJoined = await prisma.user.findUnique({
-    //   where: {
-    //     id: user.id,
-    //   },
-    //   include: {
-    //     teams: {
-    //       select: {
-    //         name: true,
-    //         description: true,
-    //         goal: true,
-    //         invitations: true,
-    //         membership: {
-    //           select: {
-    //             userType: true,
-    //             // userId,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-    // const teamUserJoined = await prisma.team.findMany({
-    //   where: {
-    //     leaderId: user.id,
-    //     // AND: [
-    //     //     { member }, // age가 20보다 큰 사용자
-    //     //     { OR: [
-    //     //       { name: { contains: "John" } }, // 이름에 "John"이 포함된 사용자
-    //     //       { email: { endsWith: "@example.com" } } // 이메일이 "@example.com"으로 끝나는 사용자
-    //     //     ]}
-    //     //   ]
-    //   },
-    //   include: {
-    //     members: {
-    //       select: {
-    //         userType: true,
-    //       },
-    //     },
-    //     _count: {
-    //       select: {
-    //         members: true,
-    //       },
-    //     },
-    //   },
-    // });
-
-    const teamUserJoined = await prisma.user.findFirst({
-      where: {
-        id: user.id,
-      },
-      include: {
-        memberships: {
-          include: {
-            member: true,
-            team: {
-              select: {
-                teamName: true,
-                description: true,
-                members: true,
-              },
-            },
-            // team: {
-            //   select: {
-            //     name: true,
-            //   },
-            // },
-          },
-        },
-        _count: {
-          select: {
-            memberships: true,
-          },
-        },
-      },
-    });
-
-    // 내가 멤버로 있는 팀 데이터
-    // const teamUserJoinedAsMember = await prisma.user.findFirst({
+    // const teamUserJoined = await prisma.user.findFirst({ // 오리지날
     //   where: {
     //     id: user.id,
     //   },
@@ -149,7 +39,13 @@ export async function GET(req: NextRequest) {
     //     memberships: {
     //       include: {
     //         member: true,
-    //         team: true,
+    //         team: {
+    //           select: {
+    //             teamName: true,
+    //             description: true,
+    //             members: true,
+    //           },
+    //         },
     //         // team: {
     //         //   select: {
     //         //     name: true,
@@ -165,9 +61,81 @@ export async function GET(req: NextRequest) {
     //   },
     // });
 
-    console.log("유저가 가지고 있는 멤버쉽 데이터: ", teamUserJoined);
+    // 유저가 리더인 팀 데이터 가져오기
+    const leadingTeams = await prisma.team.findMany({
+      where: {
+        leaderUserId: user.id,
+      },
+      include: {
+        members: {
+          select: {
+            member: {
+              select: {
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
-    return NextResponse.json({ userData: teamUserJoined }, { status: 200 });
+    // 유저가 멤버로 조인한 팀 데이터 가져오기
+    const joinedTeams = await prisma.membership.findMany({
+      where: {
+        userId: user.id,
+        userType: MemberType.MEMBER,
+      },
+      include: {
+        team: {
+          include: {
+            members: {
+              select: {
+                member: {
+                  select: {
+                    memberships: {
+                      select: {
+                        id: true,
+                      },
+                    },
+                    name: true,
+                    email: true,
+                    image: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // 팀에서 다른 유저에게 보낸 초대
+    const invitationNotifications = await prisma.notification.findMany({
+      where: {
+        notificationType: "PENDING_INVITATION",
+        senderUserId: user.id,
+      },
+      include: {
+        senderUser: true,
+        recipientUser: true,
+        team: true,
+      },
+    });
+
+    // console.log("유저가 가지고 있는 멤버쉽 데이터: ", teamUserJoined);
+    console.log("내가 리딩하고 있는 팀 :::", leadingTeams, "내가 멤버로 있는 팀:::", joinedTeams);
+
+    // return NextResponse.json({ userData: leadingTeams, joinedTeams }, { status: 200 });
+    return NextResponse.json(
+      {
+        leadingTeams: leadingTeams,
+        invitationNotis: invitationNotifications,
+        teamsAsMember: joinedTeams,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: error }, { status: 400 });
@@ -277,14 +245,63 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ message: "User is not a leader of any team." }, { status: 400 });
     }
 
-    // 2. 유저가 리더로 있던 팀과 관련된 프로젝트를 삭제한다
-    const deletedProjects = await prisma.project.deleteMany({
+    // // 2. 유저가 리더로 있던 팀과 관련된 프로젝트를 삭제한다
+    // const deletedProjectMemberhsip = await prisma.projectMembership.deleteMany({
+    //   where: {
+    //     id: {
+    //       in: userTeam.projects.map((project) => project.id),
+    //     },
+    //   },
+    // });
+
+    // Find the projects associated with the team
+    const teamProjects = await prisma.project.findMany({
       where: {
-        id: {
-          in: userTeam.projects.map((project) => project.id),
-        },
+        teamId: teamId,
       },
     });
+
+    // Delete project memberships associated with the team
+    if (teamProjects.length > 0) {
+      for (const project of teamProjects) {
+        await prisma.projectMembership.deleteMany({
+          where: {
+            projectId: project.id,
+          },
+        });
+      }
+      // Delete project tech stacks associated with the team's projects
+      for (const project of teamProjects) {
+        await prisma.projectTechStack.deleteMany({
+          where: {
+            projectId: project.id,
+          },
+        });
+
+        // Delete project applications associated with the team's projects
+        await prisma.projectApplication.deleteMany({
+          where: {
+            projectId: project.id,
+          },
+        });
+      }
+
+      // Delete the projects associated with the team
+      await prisma.project.deleteMany({
+        where: {
+          teamId: teamId,
+        },
+      });
+    }
+
+    // // 2. 유저가 리더로 있던 팀과 관련된 프로젝트를 삭제한다 -오리지날
+    // const deletedProjects = await prisma.project.deleteMany({
+    //   where: {
+    //     id: {
+    //       in: userTeam.projects.map((project) => project.id),
+    //     },
+    //   },
+    // });
 
     // 3. 팀 멤버들을 찾는다
     const teamMembers = await prisma.membership.findMany({

@@ -153,18 +153,6 @@ export async function createInvitation(data: any) {
 
 // @ 초대 수락/거절
 
-// export async function respondToInvitation(data: any) { // 오리지날
-//   // return fetch(`${BASE_URL}/api/invitation/response`, {
-//   return fetch(`${BASE_URL}/api/notification`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(data),
-//   }).then((res) => res.json());
-
-// }
-
 export async function respondToInvitation(data: any) {
   // return fetch(`${BASE_URL}/api/invitation/response`, {
   return fetch(`${BASE_URL}/api/notification`, {
@@ -176,16 +164,16 @@ export async function respondToInvitation(data: any) {
   }).then((res) => res.json());
 }
 
-// // @ 초대 거절
-// export async function rejectInvitation(data: any) {
-//   return fetch(`${BASE_URL}/api/invitation/response`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(data),
-//   }).then((res) => res.json());
-// }
+// // @ 초대 취소 as a leader
+export async function cancelInvitationAsLeader(data: any) {
+  return fetch(`${BASE_URL}/api/notification`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
 
 // @ Project -  Get a project for project detailed page
 export async function getProject(projectId: string) {

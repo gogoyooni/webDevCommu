@@ -2,24 +2,43 @@
 
 import { useSession } from "next-auth/react";
 import { useCraeteInvitation, useGetTeams } from "../../../hooks";
-import { Membership, NotificationType, Team } from "@prisma/client";
+import { Membership, NotificationType } from "@prisma/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChangeEvent, Suspense, useState } from "react";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import TeamBuilding from "@/app/_components/TeamBuilding";
 import Loader from "@/app/_components/Loader";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteTeam, quitTeam } from "@/app/libs/api";
+import { cancelInvitationAsLeader, deleteTeam, quitTeam } from "@/app/libs/api";
 import { toast } from "@/components/ui/use-toast";
+import Team from "@/app/_components/Team";
+import NoTeam from "@/app/_components/NoTeam";
+
+import { LuFlame, LuMail, LuUserX2 } from "react-icons/lu";
+import Image from "next/image";
 
 const page = () => {
   const { data, error, isLoading } = useGetTeams();
@@ -28,6 +47,8 @@ const page = () => {
   const [teamName, setTeamName] = useState("");
 
   const [creatTeamSectionIsOpen, setCreateTeamSectionIsOpen] = useState(false);
+
+  const [invitationTeam, setInvitationTeam] = useState("");
 
   const {
     data: responseOfSentInvitation,
@@ -128,173 +149,357 @@ const page = () => {
     },
   });
 
-  const teamJoinedAsLeader = data?.userData?.memberships.filter(
-    (membership: any) => membership.userType === "LEADER"
-  );
+  const {
+    mutate: _cancelInvitationAsLeader,
+    isError: _cancelInvitationAsLeaderHasError,
+    isPending: _cancelInvitationAsLeaderIsPending,
+  } = useMutation({
+    mutationFn: (data: any) => cancelInvitationAsLeader(data),
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["team"] });
+    },
+  });
 
-  const teamJoinedAsMember = data?.userData?.memberships.filter(
-    (membership: any) => membership.userType === "MEMBER"
+  // const teamJoinedAsLeader = data?.userData?.memberships.filter(
+  //   (membership: any) => membership.userType === "LEADER"
+  // );
+
+  // const teamJoinedAsMember = data?.userData?.memberships.filter(
+  //   (membership: any) => membership.userType === "MEMBER"
+  // );
+
+  const invitationsToTeam = data?.invitationNotis?.filter(
+    (noti: any) => noti.team.teamName === invitationTeam
   );
 
   // console.log(teamJoinedAsMember);
-  console.log("teamJoinedAsLeader", teamJoinedAsLeader);
+  // console.log("teamJoinedAsLeader", teamJoinedAsLeader);
 
   return (
-    <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-4 pb-9">
+    <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {/* <p>{session?.user?.name}의 팀들 입니다.</p> */}
       {isLoading ? (
         <Loader className="mx-auto w-10 h-10 animate-spin" />
       ) : (
         <>
           <div className="mx-auto max-w-6xl">
-            <h3 className="text-2xl">팀원 초대</h3>
-            <p className="font-bold">현재 {session?.user?.name}님이 리더로 있는 팀들입니다.</p>
-
-            {teamJoinedAsLeader?.length > 0 ? (
-              <>
-                <Select onValueChange={onChangeSelectTeam}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="리더로 있는 팀" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {data?.userData?.memberships?.map((membership: any) => {
-                      if (membership.userType === "LEADER") {
-                        return (
-                          //   <div key={membership.teamId}>
-                          <SelectItem key={membership.id} value={membership.team.teamName}>
-                            {membership.team.teamName}
-                          </SelectItem>
-                          //   </div>
-                        );
-                      }
-                    })}
-                  </SelectContent>
-                </Select>
-                <h3>팀원 초대</h3>
-                <Input
-                  onChange={onChangeUserEmail}
-                  className="mb-3"
-                  type="text"
-                  name="userToInvite"
-                />
-                {responseOfSentInvitation?.message === "Recipient is not found" && (
-                  <p className="text-red-500">
-                    유저를 찾을 수 없습니다. 정확한 Email을 입력해주세요
-                  </p>
-                )}
-                {responseOfSentInvitation?.message === "INVALID_REQUEST" && (
-                  <p className="text-red-500">잘못된 요청입니다.</p>
-                )}
-                {responseOfSentInvitation?.message === "SUCCESS" && (
-                  <p className="text-green-500">성공적으로 초대를 보냈습니다.</p>
-                )}
-                <Button
-                  onClick={() =>
-                    sendInvitation({
-                      notificationType: NotificationType.PENDING_INVITATION,
-                      userEmail,
-                      teamName,
-                    })
-                  }
-                >
-                  초대
-                </Button>
-              </>
-            ) : (
-              <div>
-                <h3>팀을 만들어 프로젝트를 해볼 팀원을 초대해보세요!</h3>
-                {/* // todo 아래 팀만들기 버튼을 눌리면 TeamBuilding 컴포넌트가 나오게 만든다. */}
-                <Button onClick={() => setCreateTeamSectionIsOpen(!creatTeamSectionIsOpen)}>
-                  팀 만들기
-                </Button>
-                <div className="mt-3">{creatTeamSectionIsOpen && <TeamBuilding />}</div>
-              </div>
-            )}
-          </div>
-          {/* // 유저가 멤버로 있는 팀 시작 */}
-          <div className="mx-auto w-[500px] mt-5 border p-3 border-zinc-400 rounded-md">
-            {/* // todo 여기 스켈레톤으로 로딩해주자  */}
-            <Suspense fallback={<div>Loading...</div>}>
-              <h3>내가 멤버로 있는 팀 : {teamJoinedAsMember?.length}</h3>
-              {teamJoinedAsMember?.length > 0 ? (
-                teamJoinedAsMember.map((membership: any) => (
-                  <div key={membership.id} className="flex justify-between mt-3 items-center">
-                    <span
-                    // href={`/team/${membership.team.teamName}`} // 나중에 이렇게 구현해야됨
-                    >
-                      {membership.team.teamName}
-                    </span>
-                    {/* <Link
-                      className="bg-slate-950 text-white transition-colors rounded-md text-sm px-3 py-2 hover:bg-zinc-900"
-                      href={`/user/${session?.user?.name}/teams/${membership.team.teamName}?userType=MEMBER`}
-                    >
-                      더 보기
-                    </Link> */}
-
-                    <Button
-                      onClick={() => {
-                        _quitTeam({
-                          membershipId: membership.id,
-                          teamName: membership.team.teamName,
-                          teamId: membership.teamId,
-                          userName: session?.user?.name,
-                        });
-                        toast({
-                          title: "Quit",
-                          description: `You quitted ${membership.team.teamName}`,
-                        });
-                      }}
-                    >
-                      Quit
-                    </Button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center">None</div>
-              )}
-            </Suspense>
-          </div>
-          {/* // 유저가 멤버로 있는 팀 끝*/}
-          <Suspense fallback={<div>Loading...</div>}>
-            <div className="mx-auto w-[800px] mt-5 border p-3 border-zinc-400 rounded-md">
-              <div>
-                {/* {JSON.stringify(data?.userData)} */}
-                <h3 className="text-2xl">리더로 있는 팀 : {teamJoinedAsLeader?.length}</h3>
-              </div>
-              <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
-                <p className="w-[30%]">팀</p>
-                <p className="w-[50%]">설명</p>
-                <p className="w-[20%]">인원</p>
-              </div>
-              {teamJoinedAsLeader?.length > 0 &&
-                teamJoinedAsLeader?.map((org: any) => (
-                  <div key={org.teamId} className="flex">
-                    <Link
-                      href={`/user/${session?.user?.name}/teams/${org.team.teamName}?userType=LEADER`}
-                      className="w-[30%] p-2"
-                    >
-                      {org.team.teamName}
-                    </Link>
-                    <p className="w-[50%] p-2">{org.team.description}</p>
-                    <p className="w-[20%] p-2">{org.team.members.length}</p>
-                    <Button
-                      onClick={() => {
-                        _deleteTeam({
-                          teamId: org.teamId,
-                        });
-
-                        toast({
-                          title: "DELETE",
-                          description: `You deleted ${org.team.teamName}`,
-                        });
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                ))}
+            <div className="mb-2">
+              <h3 className="text-2xl font-semibold">
+                My Teams
+                <p className="text-sm text-muted-foreground">Teams You're In</p>
+              </h3>
             </div>
-          </Suspense>
+
+            {/* // 유저가 리더로서 있는 팀 시작 */}
+            <div className="flex gap-4">
+              <div>
+                <p className="font-medium">Team as a Leader</p>
+                <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+                  <div className="flex justify-between">
+                    {/* <span className="text-sm text-muted-foreground">Team</span> */}
+                    {/* <span className="flex gap-1 items-center">
+                      <LuFlame className="w-4 h-4 text-red-500" />
+                      <span className="text-md">{data?.leadingTeams?.length}</span>
+                    </span> */}
+                  </div>
+                  {data?.leadingTeams?.length === 0 ? (
+                    <NoTeam membership="LEADER" />
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[200px]">Name</TableHead>
+                          <TableHead className="w-[250px]">Description</TableHead>
+                          <TableHead className="w-[200px]">Members</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {data?.leadingTeams?.length > 0 &&
+                          data?.leadingTeams?.map((org: any) => (
+                            <TableRow>
+                              <TableCell className="w-[200px] font-medium">
+                                <Link
+                                  // href={`/user/${session?.user?.name}/teams/${org.team.teamName}?userType=LEADER`}
+                                  href={`/user/${session?.user?.name}/teams/${org.teamName}?userType=LEADER`}
+                                  className=""
+                                >
+                                  {org.teamName}
+                                </Link>
+                              </TableCell>
+                              <TableCell className="w-[200px]">{org.description}</TableCell>
+                              <TableCell className="w-[150px] ">
+                                <div className="flex items-center [&>*:nth-child(even)]:ml-[-10px]">
+                                  {org?.members?.map((member: any) => (
+                                    <Image
+                                      className="rounded-full"
+                                      alt={member.member.name}
+                                      src={member.member.image}
+                                      width={30}
+                                      height={30}
+                                    />
+                                  ))}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <span className="flex gap-1 items-center">
+                                  <LuFlame className="w-4 h-4 text-red-500" />
+                                  <span className="text-md">{org?.members?.length}</span>
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-left">
+                                <Button
+                                  onClick={() => {
+                                    _deleteTeam({
+                                      teamId: org.id,
+                                    });
+
+                                    toast({
+                                      title: "DELETE",
+                                      description: `You deleted ${org.teamName}`,
+                                    });
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </div>
+                {/* // 유저가 리더로서 있는 팀 끝 */}
+
+                {data?.leadingTeams?.length > 0 ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <LuMail className="w-5 h-5" />
+                      <p className="text-md font-medium">Invitation</p>
+                    </div>
+                    <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+                      <span className="text-sm text-muted-foreground">
+                        Team
+                        {/* You need to make your own team before inviting another user to your team. */}
+                      </span>
+                      <Select onValueChange={onChangeSelectTeam}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Your leading teams" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {data?.leadingTeams?.map((membership: any) => {
+                            // if (membership.userType === "LEADER") {
+                            return (
+                              //   <div key={membership.teamId}>
+                              <SelectItem key={membership.id} value={membership.teamName}>
+                                {membership.teamName}
+                              </SelectItem>
+                              //   </div>
+                            );
+                            // }
+                          })}
+                        </SelectContent>
+                      </Select>
+                      {/* <h3>Invite a user to your team</h3> */}
+                      <Input
+                        placeholder="Type the user's email"
+                        onChange={onChangeUserEmail}
+                        className="my-3"
+                        type="text"
+                        name="userToInvite"
+                      />
+                      {responseOfSentInvitation?.message === "Recipient is not found" && (
+                        <p className="text-red-500 my-2">
+                          User is not found. Make sure that email is correct.
+                        </p>
+                      )}
+                      {responseOfSentInvitation?.message === "INVALID_REQUEST" && (
+                        <p className="text-red-500 my-2">Invalid Request</p>
+                      )}
+                      {responseOfSentInvitation?.message === "SUCCESS" && (
+                        <p className="text-green-500 my-2">
+                          Invitation has been sent successfully{" "}
+                        </p>
+                      )}
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={() =>
+                            sendInvitation({
+                              notificationType: NotificationType.PENDING_INVITATION,
+                              userEmail,
+                              teamName,
+                            })
+                          }
+                        >
+                          Send
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+                    <p className="font-medium text-md">Team Building</p>
+                    <span className="text-sm text-muted-foreground">
+                      You need to make your own team before inviting another user to your team
+                    </span>
+                    {/* <div className="mt-3">{creatTeamSectionIsOpen && <TeamBuilding />}</div> */}
+                    <div className="mt-3">
+                      <TeamBuilding />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="w-full">
+                <p className="text-md ">Invitation List</p>
+                <div className="my-2 h-[300px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+                  <Select onValueChange={(value) => setInvitationTeam(value)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select a team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Team</SelectLabel>
+                        {data?.leadingTeams?.length > 0
+                          ? data?.leadingTeams?.map((team: any) => (
+                              <SelectItem value={team.teamName}>{team.teamName}</SelectItem>
+                            ))
+                          : "None"}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground my-2">Invitees</p>
+                  <div className="overflow-y-auto">
+                    {invitationsToTeam?.length === 0 && (
+                      <div className="pt-[60px] flex gap-2 items-center justify-center text-muted-foreground">
+                        <LuUserX2 className="w-7 h-7" />
+                        <p>No invitees yet</p>
+                      </div>
+                    )}
+                    {invitationsToTeam?.length > 0 &&
+                      invitationsToTeam?.map((user: any) => (
+                        <div className="flex gap-2 justify-between">
+                          <div className="flex gap-3 items-center">
+                            <Image
+                              className="rounded-full"
+                              src={user.recipientUser.image}
+                              alt={user.recipientUser.name}
+                              width={30}
+                              height={30}
+                            />
+                            <div className="flex flex-col text-xs">
+                              <span>{user.recipientUser.name}</span>
+                              <span>{user.recipientUser.email}</span>
+                            </div>
+                            <p className="text-yellow-500 ml-3">
+                              {user.notificationType === "PENDING_INVITATION" && "PENDING"}
+                            </p>
+                          </div>
+                          <div className="text-xs">
+                            <Button
+                              onClick={() =>
+                                _cancelInvitationAsLeader({
+                                  notificationId: user.id,
+                                  notificationType: NotificationType.CANCEL_INVITATION,
+                                })
+                              }
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* // 유저가 멤버로 있는 팀 시작 */}
+            <div className="mt-3">
+              <p className="font-medium">Team as a Member</p>
+              <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+                {/* // todo 여기 스켈레톤으로 로딩해주자  */}
+
+                {/* <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Team</span>
+                <span className="flex gap-1 items-center">
+                  <LuFlame className="w-4 h-4 text-red-500" />
+                  <span className="text-md">{data?.teamsAsMember?.length}</span>
+                </span>
+              </div> */}
+                {data?.teamsAsMember?.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[200px]">Name</TableHead>
+                        <TableHead className="w-[250px]">Description</TableHead>
+                        <TableHead className="w-[200px]">Members</TableHead>
+                        <TableHead>Total</TableHead>
+                        <TableHead>Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                      {data?.teamsAsMember?.length > 0 &&
+                        data?.teamsAsMember?.map((membership: any) => (
+                          <TableRow key={membership.id}>
+                            <TableCell className="font-medium">
+                              {membership.team.teamName}
+                            </TableCell>
+                            <TableCell>{membership.team.description}</TableCell>
+                            <TableCell className="flex items-center [&>*:nth-child(even)]:ml-[-10px]">
+                              {membership?.team?.members?.map((member: any) => (
+                                <Image
+                                  className="rounded-full"
+                                  alt={member.member.name}
+                                  src={member.member.image}
+                                  width={30}
+                                  height={30}
+                                />
+                              ))}
+                            </TableCell>
+                            <TableCell>
+                              <span className="flex gap-1 items-center">
+                                <LuFlame className="w-4 h-4 text-red-500" />
+                                <span className="text-md">{membership?.team?.members?.length}</span>
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                onClick={() => {
+                                  _quitTeam(data);
+                                  toast({
+                                    title: "Quit",
+                                    description: `You quitted ${membership.team.teamName}`,
+                                  });
+                                }}
+                              >
+                                Quit
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+
+                          // <Team
+                          //   membership={membership}
+                          //   _quitTeam={_quitTeam}
+                          //   data={{
+                          //     membershipId: membership.id,
+                          //     teamName: membership.team.teamName,
+                          //     teamId: membership.teamId,
+                          //     userName: session?.user?.name,
+                          //   }}
+                          // />
+                        ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <NoTeam membership="MEMBER" />
+                )}
+              </div>
+              {/* // 유저가 멤버로 있는 팀 끝*/}
+            </div>
+          </div>
         </>
       )}
     </div>
