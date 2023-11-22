@@ -39,6 +39,24 @@ import NoTeam from "@/app/_components/NoTeam";
 
 import { LuFlame, LuMail, LuUserX2 } from "react-icons/lu";
 import Image from "next/image";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 
 const page = () => {
   const { data, error, isLoading } = useGetTeams();
@@ -190,7 +208,6 @@ const page = () => {
                 <p className="text-sm text-muted-foreground">Teams You're In</p>
               </h3>
             </div>
-
             {/* // 유저가 리더로서 있는 팀 시작 */}
             <div className="flex gap-4">
               <div>
@@ -250,7 +267,58 @@ const page = () => {
                                 </span>
                               </TableCell>
                               <TableCell className="text-left">
-                                <Button
+                                <AlertDialog>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                                      >
+                                        <DotsHorizontalIcon className="h-4 w-4" />
+                                        <span className="sr-only">Open menu</span>
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[160px]">
+                                      <DropdownMenuItem>
+                                        <Link
+                                          // href={`/user/${session?.user?.name}/teams/${org.team.teamName}?userType=LEADER`}
+                                          href={`/user/${session?.user?.name}/teams/${org.teamName}?userType=LEADER`}
+                                        >
+                                          Create Project
+                                        </Link>
+                                      </DropdownMenuItem>
+                                      <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                                      </AlertDialogTrigger>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete
+                                        your team
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          _deleteTeam({
+                                            teamId: org.id,
+                                          });
+                                          toast({
+                                            title: "DELETE",
+                                            description: `You deleted ${org.teamName}`,
+                                          });
+                                        }}
+                                      >
+                                        Continue
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                                {/* <Button
                                   onClick={() => {
                                     _deleteTeam({
                                       teamId: org.id,
@@ -263,7 +331,7 @@ const page = () => {
                                   }}
                                 >
                                   Delete
-                                </Button>
+                                </Button> */}
                               </TableCell>
                             </TableRow>
                           ))}
@@ -325,6 +393,7 @@ const page = () => {
                       )}
                       <div className="flex justify-end">
                         <Button
+                          disabled={sendInvitationIsPending}
                           onClick={() =>
                             sendInvitation({
                               notificationType: NotificationType.PENDING_INVITATION,
@@ -398,6 +467,7 @@ const page = () => {
                           </div>
                           <div className="text-xs">
                             <Button
+                              disabled={_cancelInvitationAsLeaderIsPending}
                               onClick={() =>
                                 _cancelInvitationAsLeader({
                                   notificationId: user.id,

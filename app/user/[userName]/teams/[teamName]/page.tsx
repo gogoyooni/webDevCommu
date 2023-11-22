@@ -82,103 +82,90 @@ const page = ({
   };
 
   return (
-    <div className="mx-auto w-[700px]">
-      유저이름(리더): {decodeURIComponent(params.userName)}
-      <h3>{decodeURIComponent(params.teamName)} 팀의 프로젝트 만들기</h3>
-      <span className="text-sm text-muted-foreground">Project name</span>
-      <Input
-        value={projectTitle}
-        onChange={onChangeSetProject}
-        className="mb-3"
-        type="text"
-        name="title"
-      />
-      <span className="text-sm text-muted-foreground">Libraries</span>
-      <TechStackCreator techStack={techStack} onChangeSetTechValue={onChangeSetTechValue} />
-      {/* <div className="flex overflow-auto gap-3 mb-3">
-        {techStack?.length > 0 &&
-          techStack?.map((tech, i) => (
-            <span key={i} className="px-3 py-2 rounded-lg bg-green-400">
-              {tech}
-            </span>
-          ))}
-      </div>
-      <input
-        onKeyDown={onChangeSetTechValue}
-        className=" relative text-md border border-zinc-400 rounded-md w-[100%] p-2 mb-3"
-        type="text"
-      /> */}
-      <div className="mb-[100px]">
-        <span className="text-sm text-muted-foreground">Content</span>
-        <ReactQuill
-          theme="snow"
-          modules={modules}
-          formats={formats}
-          style={{ height: "300px", maxHeight: "300px" }}
-          // name="description"
-          value={projectDescByQuill}
-          onChange={setProjectDescByQuill}
+    <div className=" bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
+      <div className="mx-auto my-2 w-[700px] h-[730px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+        {/* 유저이름(리더): {decodeURIComponent(params.userName)} */}
+        <h3>Create a project for Team {decodeURIComponent(params.teamName)}</h3>
+        <span className="text-sm text-muted-foreground">Project name</span>
+        <Input
+          placeholder="Name"
+          value={projectTitle}
+          onChange={onChangeSetProject}
+          className="mb-3"
+          type="text"
+          name="title"
         />
-      </div>
-      <Button
-        disabled={createProjectIsPending}
-        onClick={() => {
-          createProject({
-            title: projectTitle,
-            content: projectDescByQuill,
-            technologies: changeStringToArray(techStack),
-            // teamName: decodeURIComponent(params.teamName),
-            // userName: decodeURIComponent(params.userName),
-          });
+        <span className="text-sm text-muted-foreground">Libraries</span>
+        <TechStackCreator techStack={techStack} onChangeSetTechValue={onChangeSetTechValue} />
+        <div className="mb-[100px]">
+          <span className="text-sm text-muted-foreground">Content</span>
+          <ReactQuill
+            theme="snow"
+            modules={modules}
+            formats={formats}
+            style={{ height: "300px", maxHeight: "300px" }}
+            // name="description"
+            value={projectDescByQuill}
+            onChange={setProjectDescByQuill}
+          />
+        </div>
+        <div className="flex justify-end">
+          <Button
+            disabled={createProjectIsPending}
+            onClick={() => {
+              createProject({
+                title: projectTitle,
+                content: projectDescByQuill,
+                technologies: changeStringToArray(techStack),
+              });
 
-          setProjectTitle("");
+              setProjectTitle("");
 
-          toast({
-            title: `You created a new project`,
-          });
+              toast({
+                title: `You created a new project`,
+              });
 
-          setTimeout(() => {
-            router.push("/");
-          }, 1000);
-        }}
-      >
-        Create
-      </Button>
-      {/* // 해당 팀의 프로젝트 */}
-      <h3 className="text-2xl mt-3">프로젝트</h3>
+              setTimeout(() => {
+                router.push(`/user/${session?.user?.name}/projects`);
+              }, 1000);
+            }}
+          >
+            Create
+          </Button>
+        </div>
+
+        {/* // 해당 팀의 프로젝트 */}
+        {/* <h3 className="text-2xl mt-3">프로젝트</h3>
       {searchParams.userType === "LEADER" ? (
-        <Suspense fallback={<Loader />}>
-          <div className="border border-zinc-400 rounded-md p-2 mt-2">
-            <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
-              <p className="">이름</p>
-            </div>
-
-            {data?.response?.length > 0 &&
-              data?.response?.map((project: any) => (
-                <div key={project.id} className="flex">
-                  <p className="">
-                    {/* <Link href={`/user/${decodeURIComponent(session?.user?.name as string)}/team/${project.team.teamName}/${}?userType=LEADER`}>{project.title}</Link> */}
-                  </p>
-                </div>
-              ))}
+        <div className="border border-zinc-400 rounded-md p-2 mt-2">
+          <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
+            <p className="">이름</p>
           </div>
-        </Suspense>
+
+          {data?.response?.length > 0 &&
+            data?.response?.map((project: any) => (
+              <div key={project.id} className="flex">
+                <p className="">
+                  <Link href={`/user/${decodeURIComponent(session?.user?.name as string)}/team/${project.team.teamName}/${}?userType=LEADER`}>{project.title}</Link>
+                </p>
+              </div>
+            ))}
+        </div>
       ) : (
-        <Suspense fallback={<Loader />}>
-          <div className="border border-zinc-400 rounded-md p-2 mt-2">
-            <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
-              <p className="">이름</p>
-            </div>
-
-            {data?.response?.projects?.length > 0 &&
-              data?.response?.projects?.map((project: any) => (
-                <div key={project.id} className="flex">
-                  <p className="">{project.title}</p>
-                </div>
-              ))}
+        <div className="border border-zinc-400 rounded-md p-2 mt-2">
+          <div className="flex text-left border-b-zinc-400 border-b-[1px] mb-3">
+            <p className="">이름</p>
           </div>
-        </Suspense>
-      )}
+
+          {data?.response?.projects?.length > 0 &&
+            data?.response?.projects?.map((project: any) => (
+              <div key={project.id} className="flex">
+                <p className="">{project.title}</p>
+              </div>
+            ))}
+        </div>
+      )} */}
+      </div>
     </div>
   );
 };

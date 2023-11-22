@@ -210,7 +210,7 @@ const Comment = ({
   comment: any;
   userLikeComment: any;
   userLikeCommentIsPending: any;
-  userUnlikeComment: (data: { likeId: string; userId: string; commentId: string }) => void;
+  userUnlikeComment: (data: { likeId: string; commentId: string }) => void;
   userUnlikeCommentIsPending: boolean;
   // userLikedComment: [] | undefined;
   // setUserLikedComment: Dispatch<SetStateAction<undefined>>;
@@ -242,8 +242,11 @@ const Comment = ({
 
   // console.log("comment.replies: ", comment.replies);
 
+  const { data: session } = useSession();
+
   let commentUserLiked: any = comment?.likes.filter((liked: any) => {
-    return liked.commentId === comment.id && liked.user.id === comment.author.id;
+    // return liked.commentId === comment.id && liked.user.id === comment.author.id;
+    return liked.commentId === comment.id && liked.user.name === session?.user?.name;
   });
 
   // setUserLikedComment(commentUserLiked);
@@ -290,7 +293,7 @@ const Comment = ({
                 console.log("commentUserLiked.id", commentUserLiked.id);
                 userUnlikeComment({
                   likeId: commentUserLiked[0].id,
-                  userId: comment.author.id,
+                  // userId: comment.author.id,
                   commentId: comment.id,
                 });
 

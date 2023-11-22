@@ -333,3 +333,23 @@ export async function deleteTeam(data: any) {
     body: JSON.stringify(data),
   }).then((res) => res.json());
 }
+
+// @Bookmark - get bookmarks initially
+export async function getBookmarks(type: string) {
+  return fetch(`${BASE_URL}/api/bookmarks?type=${type}`, {
+    cache: "no-store",
+  }).then((res) => res.json());
+}
+
+// // @Bookmark - get bookmarks depending the tab state(post/porject)
+// export async function getBookmarks(type: string) {
+//   // const { userName } = data;
+
+//   return fetch(`${BASE_URL}/api/bookmarks?type=${type}`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     // body: JSON.stringify(data),
+//   }).then((res) => res.json());
+// }

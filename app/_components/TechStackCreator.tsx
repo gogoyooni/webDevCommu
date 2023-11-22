@@ -10,12 +10,14 @@ const TechStackCreator = ({
       <div className="flex overflow-auto gap-3 mb-3">
         {techStack?.length > 0 &&
           techStack?.map((tech: any, i: number) => (
-            <span key={i} className="px-3 py-2 rounded-lg bg-green-400">
+            <span key={i} className="px-3 py-2 rounded-lg bg-[#5065F6] text-white">
               {tech}
             </span>
           ))}
       </div>
-      <span className="text-sm text-muted-foreground">Add libraries to be used for project</span>
+      <span className="text-sm text-muted-foreground">
+        Add libraries or tech stacks to be used for project
+      </span>
       <input
         placeholder="Type a library or framework to use and press enter"
         onKeyDown={onChangeSetTechValue}
