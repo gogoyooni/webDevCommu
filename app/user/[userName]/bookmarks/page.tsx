@@ -47,28 +47,36 @@ const page = () => {
 
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
-      {isLoading ? (
-        <Loader className="mx-auto w-8 h-8 animate-spin" />
-      ) : (
-        <div className="mx-auto max-w-6xl">
-          <Tabs
-            onValueChange={(val) => setTabValue(val)}
-            defaultValue={tabValue}
-            className="w-[400px]"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="post">Post</TabsTrigger>
-              <TabsTrigger value="project">Project</TabsTrigger>
-            </TabsList>
-            <TabsContent value="post">
-              <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]"></div>
-            </TabsContent>
-            <TabsContent value="project">
-              <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]"></div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
+      <div className="mx-auto max-w-6xl">
+        <Tabs
+          onValueChange={(val) => setTabValue(val)}
+          defaultValue={tabValue}
+          className="w-[400px]"
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="post">Post</TabsTrigger>
+            <TabsTrigger value="project">Project</TabsTrigger>
+          </TabsList>
+          <TabsContent value="post">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+              {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((post: any) => <div></div>)
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="project">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+              {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((project: any) => <div></div>)
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

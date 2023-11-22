@@ -297,9 +297,8 @@ export async function rejectApplication(data: any) {
 
 // @ Bookmark - accept an applicant for a proejct (leader만 reject 가능)
 export async function bookmark(data: any) {
-  const { userName } = data;
   // return fetch(`${BASE_URL}/api/invitation/response`, {
-  return fetch(`${BASE_URL}/api/user/${userName}/bookmarks`, {
+  return fetch(`${BASE_URL}/api/bookmarks`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

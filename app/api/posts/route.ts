@@ -63,6 +63,11 @@ export async function GET(req: NextRequest) {
 
   const data = await prisma.post.findMany({
     include: {
+      comments: {
+        select: {
+          id: true, // Include any other comment fields you need
+        },
+      },
       _count: {
         select: {
           likes: true,
