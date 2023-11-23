@@ -4,12 +4,13 @@ import prisma from "@/app/libs/prismadb";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { NotificationType } from "@prisma/client";
 
 // @ comment - user likes comment
 export async function POST(req: NextRequest) {
-  const { userId, commentId } = await req.json();
+  const { userId, commentId, postId, postAuthorId } = await req.json();
 
-  if (!userId || !commentId) {
+  if (!userId || !commentId || !postId || !postAuthorId) {
     return NextResponse.json({ message: "Your request is invalid" }, { status: 400 });
   }
 
@@ -38,7 +39,16 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ result }, { status: 200 });
+    const notification = await prisma.notification.create({
+      data: {
+        senderUserId: user.id,
+        notificationType: NotificationType.LIKE_COMMENT,
+        recipientUserId: postAuthorId,
+        postId,
+      },
+    });
+
+    return NextResponse.json({ message: "SUCCESS", response: notification }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: "Something went wrong" }, { status: 400 });
   }

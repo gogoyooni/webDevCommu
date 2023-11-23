@@ -175,6 +175,8 @@ const Post = ({ params }: { params: { postId: string } }) => {
               return (
                 <Comment
                   key={comment.id}
+                  postId={params.postId}
+                  postAuthorId={postData?.data?.authorId}
                   comment={comment}
                   userLikeComment={userLikeComment}
                   userLikeCommentIsPending={userLikeCommentIsPending}
@@ -198,6 +200,8 @@ export default Post;
 
 const Comment = ({
   comment,
+  postId,
+  postAuthorId,
   userLikeComment,
   userLikeCommentIsPending,
   userUnlikeComment,
@@ -208,6 +212,8 @@ const Comment = ({
 // setUserLikedComment,
 {
   comment: any;
+  postId: string;
+  postAuthorId: string;
   userLikeComment: any;
   userLikeCommentIsPending: any;
   userUnlikeComment: (data: { likeId: string; commentId: string }) => void;
@@ -273,6 +279,8 @@ const Comment = ({
               onClick={() => {
                 userLikeComment({
                   userId: comment.author.id,
+                  postAuthorId,
+                  postId,
                   commentId: comment.id,
                 });
 

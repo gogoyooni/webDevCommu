@@ -30,6 +30,9 @@ export async function GET(req: NextRequest) {
       where: {
         id: user.id,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         posts: true,
         likes: {
@@ -64,8 +67,14 @@ export async function GET(req: NextRequest) {
           select: {
             id: true,
             postId: true,
+            post: true,
             commentId: true,
+            comment: true,
+            teamId: true,
+            projectId: true,
+            project: true,
             notificationType: true,
+            createdAt: true,
             senderUser: {
               select: {
                 id: true,
@@ -96,11 +105,20 @@ export async function GET(req: NextRequest) {
           },
         },
         receivedNotifications: {
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
             id: true,
             postId: true,
+            post: true,
             commentId: true,
+            comment: true,
+            teamId: true,
+            projectId: true,
+            project: true,
             notificationType: true,
+            createdAt: true,
             senderUser: {
               select: {
                 id: true,

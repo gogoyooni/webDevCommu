@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from "@/app/_components/Loader";
 import { useGetNotifications, useRespondToInvitation } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
 import { NotificationType } from "@prisma/client";
@@ -11,10 +12,6 @@ const page = ({ params }: { params: { userName: string } }) => {
   const { data, error, isLoading } = useGetNotifications();
 
   console.log("notification data", data);
-
-  if (isLoading) {
-    return <div>Loading ...</div>;
-  }
 
   if (error) {
     return <div>something went wrong.. please try it again later</div>;
@@ -76,17 +73,25 @@ const page = ({ params }: { params: { userName: string } }) => {
   console.log("invitationsUserSent", invitationsUserSent);
 
   return (
-    <div>
-      <h1> Notification 페이지</h1>
-      userName:: {decodeURIComponent(params.userName)}
-      <br />
-      <br />
-      {/* {JSON.stringify(data.data)} */}
-      {/* {data?.data?.receivedNotifications?.map((noti: any) => (
+    <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
+      {isLoading ? (
+        <Loader className="mx-auto w-10 h-10 animate-spin" />
+      ) : (
+        <>
+          <div className="mx-auto max-w-6xl">
+            <h1> Notification 페이지</h1>
+            userName:: {decodeURIComponent(params.userName)}
+            <br />
+            <br />
+            {/* {JSON.stringify(data.data)} */}
+            {/* {data?.data?.receivedNotifications?.map((noti: any) => (
         <Notification noti={noti} />
       ))} */}
-      <ReceivedInvitations data={invitationsUserGot} />
-      <SentInvitations data={invitationsUserSent} />
+            <ReceivedInvitations data={invitationsUserGot} />
+            <SentInvitations data={invitationsUserSent} />
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -150,7 +155,7 @@ const ReceivedInvitations = ({ data }: { data: ReceivedInvitation[] }) => {
 
   // PENDING notificationType을 하나 넣어주면 팀 초대 보낸 유저의 대시보드나 어디에서나 응답대기중이라는 상태 보게끔 만들 수 있다.
   return (
-    <div className="mx-auto w-[500px] border border-zinc-400 p-3 mt-5 rounded-md">
+    <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       <h3>내가 초대받은 팀</h3>
       <p>{data?.length === 0 && "현재까지 초대받은 팀 없음"}</p>
       {data?.map((invitation) => (
@@ -226,6 +231,7 @@ const SentInvitations = ({ data }: { data: any }) => {
   return (
     <div className="mx-auto w-[500px] border border-zinc-400 p-3 mt-5 rounded-md">
       <h3>내가 초대한 사용자</h3>
+
       <p>{data?.length === 0 && "현재까지 초대한 유저 없음"}</p>
       {data?.map((invitation: any) => (
         <div key={invitation.senderUser.id} className="flex items-center gap-3">
