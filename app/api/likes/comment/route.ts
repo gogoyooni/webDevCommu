@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       data: {
         senderUserId: user.id,
         notificationType: NotificationType.LIKE_COMMENT,
+        commentId,
         recipientUserId: postAuthorId,
         postId,
       },

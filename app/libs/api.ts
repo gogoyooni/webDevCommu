@@ -105,8 +105,8 @@ export async function unlikeComment(data: any) {
 
 // @ 유저가 본인 notification 페이지 이동시
 
-export async function getNotifications() {
-  return fetch(`${BASE_URL}/api/notification`, {
+export async function getNotifications(type: string) {
+  return fetch(`${BASE_URL}/api/notification?type=${type}`, {
     cache: "no-store",
   }).then((res) => res.json());
 }

@@ -206,7 +206,6 @@ export async function POST(req: NextRequest, { params }: { params: { teamName: s
 
   const notificationData = {
     notificationType: NotificationType.NEW_PROJECT,
-    isRead: false,
     senderUserId: newProject.leaderId, // Assuming the project author sends the notification
     projectId: newProject.id,
     teamId: newProject.teamId,

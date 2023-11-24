@@ -84,7 +84,6 @@ export async function POST(req: NextRequest, { params }: { params: { projectId: 
     console.log("Application submitted successfully: ", applicationResult);
   } else {
     // 지원자가 application 쥐소 했을때
-    // 지원자가 이미 이 프로젝트에 지원한 적 있는지 체크
     applicationResult = await prisma.projectApplication.delete({
       where: {
         applicantId_projectId: {

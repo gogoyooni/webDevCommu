@@ -313,6 +313,8 @@ export async function DELETE(req: NextRequest) {
       },
     });
 
+    console.log("teamId inside api/team/delete ::::", teamId);
+
     // 4. 팀 멤버들에게 팀 삭제 사실을 notification 알린다.
     const notificationPromises = teamMembers.map(async (member) => {
       const createdNotification = await prisma.notification.create({

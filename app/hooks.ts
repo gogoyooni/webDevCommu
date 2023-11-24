@@ -240,10 +240,10 @@ export const useUnlikePost = () => {
 };
 
 // @ notification GET - get notifications for a user
-export const useGetNotifications = () => {
+export const useGetNotifications = (tabValue: string) => {
   const { data, error, isLoading } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: getNotifications,
+    queryKey: ["notifications", tabValue],
+    queryFn: () => getNotifications(tabValue),
   });
 
   return {

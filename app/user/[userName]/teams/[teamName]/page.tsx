@@ -3,28 +3,18 @@
 import { useCreateProject, useGetProjects, useGetUserProjects } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  MutableRefObject,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useState } from "react";
 
 import { sanitize, isSupported } from "isomorphic-dompurify";
 import "react-quill/dist/quill.snow.css";
 import { changeStringToArray } from "@/lib/utils";
-import Link from "next/link";
 import TechStackCreator from "@/app/_components/TechStackCreator";
 import Loader from "@/app/_components/Loader";
 import { formats, modules } from "@/lib/constants";
+import { toast } from "@/components/ui/use-toast";
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
@@ -119,15 +109,15 @@ const page = ({
                 technologies: changeStringToArray(techStack),
               });
 
-              setProjectTitle("");
-
               toast({
                 title: `You created a new project`,
               });
 
-              setTimeout(() => {
-                router.push(`/user/${session?.user?.name}/projects`);
-              }, 1000);
+              setProjectTitle("");
+
+              // setTimeout(() => {
+              //   router.push(`/user/${session?.user?.name}/projects`);
+              // }, 1000);
             }}
           >
             Create

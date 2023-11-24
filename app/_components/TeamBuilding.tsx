@@ -7,6 +7,7 @@ import { UseMutateFunction } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import { useCreateTeam } from "../hooks";
+import { toast } from "@/components/ui/use-toast";
 
 interface TeamData {
   name: string;
@@ -59,9 +60,12 @@ const TeamBuilding = ({}: // createTeam,
         disabled={createTeamIsPending}
         onClick={() => {
           createTeam(teamData);
-          setTimeout(() => {
-            router.push("/team");
-          }, 1000);
+          toast({
+            title: `Team ${teamData.name} created`,
+          });
+          // setTimeout(() => {
+          //   router.push("/team");
+          // }, 1000);
         }}
         className="w-full mt-5"
       >

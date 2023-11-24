@@ -93,49 +93,6 @@ const page = () => {
 
   //   if (error) return <div>Something is wrong</div>;
 
-  //   {
-  //     "userData": {
-  //         "id": "clopztl2l0003rpk8e7bny3g5",
-  //         "name": "마음부자",
-  //         "email": "taeyoondev@gmail.com",
-  //         "emailVerified": null,
-  //         "image": "https://lh3.googleusercontent.com/a/ACg8ocKtrEesil6oozuiVC-u9Sp_uLYbMij8NGN_swvA2t0y=s96-c",
-  //         "createdAt": "2023-11-08T16:47:23.249Z",
-  //         "updatedAt": "2023-11-08T16:47:23.249Z",
-  //         "membership": [
-  //             {
-  //                 "id": "cloql7wwv0005rpu7oehsmxvr",
-  //                 "userId": "clopztl2l0003rpk8e7bny3g5",
-  //                 "teamId": "cloql7wj30003rpu7zo38v7ai",
-  //                 "userType": "LEADER",
-  //                 "createdAt": "2023-11-09T02:46:23.839Z",
-  //                 "member": {
-  //                     "id": "clopztl2l0003rpk8e7bny3g5",
-  //                     "name": "마음부자",
-  //                     "email": "taeyoondev@gmail.com",
-  //                     "emailVerified": null,
-  //                     "image": "https://lh3.googleusercontent.com/a/ACg8ocKtrEesil6oozuiVC-u9Sp_uLYbMij8NGN_swvA2t0y=s96-c",
-  //                     "createdAt": "2023-11-08T16:47:23.249Z",
-  //                     "updatedAt": "2023-11-08T16:47:23.249Z"
-  //                 },
-  //                 "team": {
-  //                     "id": "cloql7wj30003rpu7zo38v7ai",
-  //                     "leaderId": "clopztl2l0003rpk8e7bny3g5",
-  //                     "name": "팀1",
-  //                     "image": null,
-  //                     "description": "팀1 설명",
-  //                     "goal": "10억",
-  //                     "memberCount": null,
-  //                     "createdAt": "2023-11-09T02:46:23.344Z",
-  //                     "updatedAt": "2023-11-09T02:46:23.344Z"
-  //                 }
-  //             }
-  //         ],
-  //         "_count": {
-  //             "membership": 1
-  //         }
-  //     }
-  // }
   if (!session?.user) {
     alert("로그인을 해주세요");
     router.push("/");
@@ -188,7 +145,7 @@ const page = () => {
   // );
 
   const invitationsToTeam = data?.invitationNotis?.filter(
-    (noti: any) => noti.team.teamName === invitationTeam
+    (noti: any) => noti?.team?.teamName === invitationTeam
   );
 
   // console.log(teamJoinedAsMember);

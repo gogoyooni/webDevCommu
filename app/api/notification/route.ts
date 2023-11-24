@@ -24,6 +24,110 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: "User is not found" }, { status: 403 });
   }
 
+  const url = new URL(req.url);
+
+  const type = url.searchParams.get("type");
+  console.log("type:::::::::::", type);
+
+  try {
+    // Calculate the date 7 days ago
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    if (type === "history") {
+      // Retrieve notifications sent by the user
+      const sentNotifications = await prisma.notification.findMany({
+        where: {
+          senderUserId: user.id,
+          createdAt: {
+            gte: sevenDaysAgo,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          post: true,
+          comment: true,
+          recipientUser: true,
+          senderUser: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          team: {
+            select: {
+              teamName: true,
+              leaderUser: true,
+            },
+          },
+          project: true,
+        },
+      });
+
+      return NextResponse.json(
+        { message: "SUCCESS", response: sentNotifications },
+        { status: 200 }
+      );
+    }
+    if (type === "invitation") {
+      // Retrieve invitations sent by other users
+      const receivedInvitations = await prisma.notification.findMany({
+        where: {
+          // recipientUserId: user.id,
+          // senderUserId: user.id,
+          createdAt: {
+            gte: sevenDaysAgo,
+          },
+          OR: [
+            {
+              recipientUserId: user.id,
+              notificationType: {
+                in: ["PENDING_INVITATION", "ACCEPT_INVITATION", "REJECT_INVITATION"],
+              },
+            },
+            {
+              senderUserId: user.id,
+              notificationType: {
+                in: ["PENDING_INVITATION", "ACCEPT_INVITATION", "REJECT_INVITATION"],
+              },
+            },
+          ],
+          // notificationType: NotificationType.PENDING_INVITATION,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          post: true,
+          comment: true,
+          recipientUser: true,
+          senderUser: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          team: {
+            select: {
+              teamName: true,
+              leaderUser: true,
+            },
+          },
+          project: true,
+        },
+      });
+
+      return NextResponse.json(
+        { message: "SUCCESS", response: receivedInvitations },
+        { status: 200 }
+      );
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
   // let data;
   try {
     const data = await prisma.user.findFirst({
@@ -64,6 +168,9 @@ export async function GET(req: NextRequest) {
           },
         },
         sentNotifications: {
+          orderBy: {
+            createdAt: "desc",
+          },
           select: {
             id: true,
             postId: true,
@@ -267,14 +374,24 @@ export async function POST(req: NextRequest) {
 
   //***** */ 초대 수락 시작
   if (notificationType === "ACCEPT_INVITATION") {
-    const responseNoti = await prisma.notification.update({
-      where: {
-        id: notificationId,
-      },
+    // const responseNoti = await prisma.notification.update({
+    //   where: {
+    //     id: notificationId,
+    //   },
+    //   data: {
+    //     senderUserId: user.id,
+    //     recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
+    //     notificationType: NotificationType.ACCEPT_INVITATION,
+    //     teamId: senderTeamId,
+    //     // teamId  -> invitation에 수락 /거절하는 것에 대답에 응하는 유저의 팀 아이디가 관계가 있나? 상관이 없는 것으로 간주. 그래서 사용 X
+    //   },
+    // });
+    const responseNoti = await prisma.notification.create({
       data: {
-        // senderUserId: user.id,
-        // recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
+        senderUserId: user.id,
+        recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
         notificationType: NotificationType.ACCEPT_INVITATION,
+        teamId: senderTeamId,
         // teamId  -> invitation에 수락 /거절하는 것에 대답에 응하는 유저의 팀 아이디가 관계가 있나? 상관이 없는 것으로 간주. 그래서 사용 X
       },
     });
@@ -301,14 +418,23 @@ export async function POST(req: NextRequest) {
 
   //***** */ 초대 거절 시작
   if (notificationType === "REJECT_INVITATION") {
-    const responseNoti = await prisma.notification.update({
-      where: {
-        id: notificationId,
-      },
+    // const responseNoti = await prisma.notification.update({
+    //   where: {
+    //     id: notificationId,
+    //   },
+    //   data: {
+    //     senderUserId: senderId,
+    //     recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
+    //     notificationType: NotificationType.REJECT_INVITATION,
+    //     teamId: senderTeamId,
+    //   },
+    // });
+    const responseNoti = await prisma.notification.create({
       data: {
-        // senderUserId: senderId,
-        // recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
+        senderUserId: senderId,
+        recipientUserId: senderId, //여기선 나한테 초대보낸사람이 받는사람이 된다.
         notificationType: NotificationType.REJECT_INVITATION,
+        teamId: senderTeamId,
       },
     });
 

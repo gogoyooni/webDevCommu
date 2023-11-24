@@ -1,57 +1,30 @@
 "use client";
 
+import History from "@/app/_components/History";
+import Invitation from "@/app/_components/Invitation";
 import Loader from "@/app/_components/Loader";
 import { useGetNotifications, useRespondToInvitation } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
+import { foramtDate } from "@/lib/utils";
 import { NotificationType } from "@prisma/client";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
+import { useState } from "react";
 
 const page = ({ params }: { params: { userName: string } }) => {
-  const { data, error, isLoading } = useGetNotifications();
+  const [tabValue, setTabValue] = useState("history");
+  const { data, error, isLoading } = useGetNotifications(tabValue);
+
+  const { data: session } = useSession();
 
   console.log("notification data", data);
 
   if (error) {
     return <div>something went wrong.. please try it again later</div>;
   }
-
-  //   {
-  //     "id": "cloon2kav0000rpcpg1pqvrkd",
-  //     "name": "마음부자",
-  //     "email": "taeyoondev@gmail.com",
-  //     "emailVerified": null,
-  //     "image": "https://lh3.googleusercontent.com/a/ACg8ocKtrEesil6oozuiVC-u9Sp_uLYbMij8NGN_swvA2t0y=s96-c",
-  //     "createdAt": "2023-11-07T18:02:41.095Z",
-  //     "updatedAt": "2023-11-07T18:02:41.095Z",
-  //     "notifications": [
-  //         {
-  //             "id": "cloon4f5p0005rpcpwzz5888z",
-  //             "type": "LIKEPOST",
-  //             "doerId": "cloon3yo30003rpcpiltoyi6j",
-  //             "toWhomId": "cloon2kav0000rpcpg1pqvrkd",
-  //             "relatedPostId": "cloon3g700002rpcpcok6huzf",
-  //             "isRead": false,
-  //             "createdAt": "2023-11-07T18:04:07.742Z",
-  //             "doerLikedPost": [
-  //                 {
-  //                     "user": {
-  //                         "name": "널리몰",
-  //                         "email": "neolimall7@gmail.com"
-  //                     },
-  //                     "post": {
-  //                         "title": "1번째 게시물",
-  //                         "author": {
-  //                             "name": "마음부자",
-  //                             "email": "taeyoondev@gmail.com"
-  //                         }
-  //                     }
-  //                 }
-  //             ]
-  //         }
-  //     ]
-  // }
 
   const invitationsUserGot = data?.data?.receivedNotifications?.filter(
     (noti: any) =>
@@ -69,55 +42,108 @@ const page = ({ params }: { params: { userName: string } }) => {
       noti.notificationType === "SEND_INVITATION" // 내가 팀 리더일 때
   );
 
-  console.log("invitationsUserGot", invitationsUserGot);
-  console.log("invitationsUserSent", invitationsUserSent);
+  const {
+    mutate: repspondToInvitation,
+    isError: respondToInvitationHasError,
+    isPending: respondToInvitationIsPending,
+  } = useRespondToInvitation();
+
+  // console.log("invitationsUserGot", invitationsUserGot);
+  // console.log("invitationsUserSent", invitationsUserSent);
 
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
-      {isLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
-      ) : (
-        <>
-          <div className="mx-auto max-w-6xl">
-            <h1> Notification 페이지</h1>
-            userName:: {decodeURIComponent(params.userName)}
-            <br />
-            <br />
-            {/* {JSON.stringify(data.data)} */}
-            {/* {data?.data?.receivedNotifications?.map((noti: any) => (
+      <div className="mx-auto max-w-6xl">
+        <Tabs onValueChange={(val) => setTabValue(val)} defaultValue={tabValue}>
+          <TabsList className="w-full rounded-md">
+            <div className="w-full gap-2 rounded-md">
+              <TabsTrigger className="p-2" value="history">
+                History
+              </TabsTrigger>
+              <TabsTrigger className="p-2" value="invitation">
+                Invitation
+              </TabsTrigger>
+              <TabsTrigger className="p-2" value="application">
+                Application
+              </TabsTrigger>
+              <TabsTrigger className="p-2" value="project">
+                Project
+              </TabsTrigger>
+              <TabsTrigger className="p-2" value="team">
+                Team
+              </TabsTrigger>
+            </div>
+          </TabsList>
+
+          <TabsContent value="history" className="rounded-md">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 border-zinc-100 border-[1px]">
+              {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((history: any) => {
+                  return <History history={history} />;
+                })
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="invitation" className="rounded-md">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 border-zinc-100 border-[1px]">
+              {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((invitation: any) => {
+                  return (
+                    <Invitation
+                      invitation={invitation}
+                      respondToInvitation={repspondToInvitation}
+                      respondToInvitationHasError={respondToInvitationHasError}
+                      respondToInvitationIsPending={respondToInvitationIsPending}
+                    />
+                  );
+                })
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="application">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+              {/* {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((post: any) => <div></div>)
+              )} */}
+            </div>
+          </TabsContent>
+          <TabsContent value="project">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+              {/* {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((project: any) => <div></div>)
+              )} */}
+            </div>
+          </TabsContent>
+          <TabsContent value="team">
+            <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+              {/* {isLoading ? (
+                <Loader className="mx-auto w-8 h-8 animate-spin" />
+              ) : (
+                data?.response?.map((project: any) => <div></div>)
+              )} */}
+            </div>
+          </TabsContent>
+        </Tabs>
+        {/* {JSON.stringify(data.data)} */}
+        {/* {data?.data?.receivedNotifications?.map((noti: any) => (
         <Notification noti={noti} />
       ))} */}
-            <ReceivedInvitations data={invitationsUserGot} />
-            <SentInvitations data={invitationsUserSent} />
-          </div>
-        </>
-      )}
+        {/* <ReceivedInvitations data={invitationsUserGot} />
+        <SentInvitations data={invitationsUserSent} /> */}
+      </div>
     </div>
   );
 };
 
 export default page;
-// [
-//   {
-//     postId: null,
-//     commentId: null,
-//     notificationType: "SEND_INVITATION",
-//     senderUser: {
-//       id: "clos0nwom0001rpze6wa6xfcz",
-//       name: "널리몰",
-//       email: "neolimall7@gmail.com",
-//     },
-//     team: {
-//       id: "closj2hvp0001rpihetbm8rym",
-//       teamName: "팀아무개1",
-//       leaderUser: {
-//         id: "clos0nwom0001rpze6wa6xfcz",
-//         name: "널리몰",
-//         email: "neolimall7@gmail.com",
-//       },
-//     },
-//   },
-// ];
 
 type SenderUser = {
   id: string;
@@ -256,24 +282,3 @@ const SentInvitations = ({ data }: { data: any }) => {
     </div>
   );
 };
-
-// const Notification = ({ noti }: { noti: any }) => {
-//   let message: ReactNode;
-//   // if (noti?.notificationType === "LIKE_POST") {
-//   //   message = (
-//   //     <div>
-//   //       <Link href={`/posts/${noti?.relatedPostId}`}>
-//   //         {noti?.doerLikedPost?.map((doer: any) => (
-//   //           <p>{doer?.user?.name}이 당신의 게시물을 좋아합니다.</p>
-//   //         ))}
-//   //       </Link>
-//   //     </div>
-//   //   );
-//   // }
-//   console.log("noti::::::::::::", noti);
-//   return (
-//     <div>
-//       <p>{message}</p>
-//     </div>
-//   );
-// };

@@ -99,10 +99,6 @@ enum NotificationType {
   TEAM_DELETED // 팀 삭제 됐을때 가는 타입
 } 
 
-// enum ResultStatusType {
-//   ACCEPTED_END
-//   REJECTED_END
-// }
 
 model Notification {
   id               String      @id @default(cuid())
