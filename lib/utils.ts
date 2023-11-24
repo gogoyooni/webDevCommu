@@ -34,7 +34,7 @@ export function foramtDate(date: any) {
 
 export function shareLink(postId: string) {
   // Get the current URL
-  const currentURL = `${window.location.href}posts/${postId}`;
+  const currentURL = `${window.location.origin}/posts/${postId}`;
 
   // Create a temporary input element
   const tempInput = document.createElement("input");

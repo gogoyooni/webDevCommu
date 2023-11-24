@@ -6,8 +6,6 @@ import Loader from "@/app/_components/Loader";
 import { useGetNotifications, useRespondToInvitation } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/components/ui/use-toast";
-import { foramtDate } from "@/lib/utils";
 import { NotificationType } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -23,33 +21,30 @@ const page = ({ params }: { params: { userName: string } }) => {
   console.log("notification data", data);
 
   if (error) {
-    return <div>something went wrong.. please try it again later</div>;
+    return <div>Something went wrong.. please try it again later</div>;
   }
 
-  const invitationsUserGot = data?.data?.receivedNotifications?.filter(
-    (noti: any) =>
-      noti.notificationType === "PENDING_INVITATION" ||
-      noti.notificationType === "ACCEPT_INVITATION" ||
-      noti.notificationType === "REJECT_INVITATION" ||
-      noti.notificationType === "SEND_INVITATION" // 내가 팀 리더일 때
-  );
+  // const invitationsUserGot = data?.data?.receivedNotifications?.filter(
+  //   (noti: any) =>
+  //     noti.notificationType === "PENDING_INVITATION" ||
+  //     noti.notificationType === "ACCEPT_INVITATION" ||
+  //     noti.notificationType === "REJECT_INVITATION" ||
+  //     noti.notificationType === "SEND_INVITATION" // 내가 팀 리더일 때
+  // );
 
-  const invitationsUserSent = data?.data?.sentNotifications?.filter(
-    (noti: any) =>
-      noti.notificationType === "PENDING_INVITATION" ||
-      noti.notificationType === "ACCEPT_INVITATION" ||
-      noti.notificationType === "REJECT_INVITATION" ||
-      noti.notificationType === "SEND_INVITATION" // 내가 팀 리더일 때
-  );
+  // const invitationsUserSent = data?.data?.sentNotifications?.filter(
+  //   (noti: any) =>
+  //     noti.notificationType === "PENDING_INVITATION" ||
+  //     noti.notificationType === "ACCEPT_INVITATION" ||
+  //     noti.notificationType === "REJECT_INVITATION" ||
+  //     noti.notificationType === "SEND_INVITATION" // 내가 팀 리더일 때
+  // );
 
   const {
     mutate: repspondToInvitation,
     isError: respondToInvitationHasError,
     isPending: respondToInvitationIsPending,
   } = useRespondToInvitation();
-
-  // console.log("invitationsUserGot", invitationsUserGot);
-  // console.log("invitationsUserSent", invitationsUserSent);
 
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">

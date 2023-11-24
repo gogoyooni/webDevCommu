@@ -135,6 +135,21 @@ export async function DELETE(req: NextRequest) {
   if (!user) {
     return NextResponse.json({ message: "User is not found" }, { status: 403 });
   }
+
+  // 포스트와 관련된 comment 삭제
+  await prisma.comment.deleteMany({
+    where: {
+      postId: postId,
+    },
+  });
+
+  // 포스트와 관련된 like 삭제
+  await prisma.like.deleteMany({
+    where: {
+      postId: postId,
+    },
+  });
+
   // 유저가 만든 게시물 삭제
   const post = await prisma.post.delete({
     where: {

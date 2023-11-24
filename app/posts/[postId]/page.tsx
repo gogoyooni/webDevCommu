@@ -12,7 +12,7 @@ import {
 
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
@@ -23,18 +23,12 @@ import { toast } from "@/components/ui/use-toast";
 const Post = ({ params }: { params: { postId: string } }) => {
   const { data: session } = useSession();
 
-  // console.log("유저 이메일:", session?.user?.email);
   const [reply, setReply] = useState("");
 
   // const [answer, setAnswer] = useState("");
   const [replyInputIsOpen, setReplyInputIsOpen] = useState(false);
 
   const [userLikedComment, setUserLikedComment] = useState();
-
-  // const onChangeSetAnswer = (e: ChangeEvent<HTMLInputElement>) => {
-  //   console.log(e.target.value);
-  //   setAnswer(e.target.value);
-  // };
 
   const onChangeSetReply = (e: ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);

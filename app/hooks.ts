@@ -10,6 +10,7 @@ import {
   createProject,
   deletePost,
   getInvitations,
+  getMyPosts,
   getMyProjects,
   getNotifications,
   getPost,
@@ -44,6 +45,19 @@ export const useGetPost = (postId: string) => {
 
 export const useGetPosts = () => {
   const { data, error, isLoading } = useQuery({ queryKey: ["posts"], queryFn: getPosts });
+
+  return {
+    data,
+    error,
+    isLoading,
+  };
+};
+// @ GET - Get user's posts
+export const useGetMyPosts = (userName: string) => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["posts"],
+    queryFn: () => getMyPosts(userName),
+  });
 
   return {
     data,

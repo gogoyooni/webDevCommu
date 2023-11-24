@@ -32,6 +32,13 @@ export async function getPosts() {
   }).then((res) => res.json());
 }
 
+// 유저가 만든 posts 가져오기
+export async function getMyPosts(userName: string) {
+  return fetch(`${BASE_URL}/api/user/${userName}/posts`, {
+    cache: "no-store",
+  }).then((res) => res.json());
+}
+
 export async function createPost(data: any) {
   return fetch(`${BASE_URL}/api/posts`, {
     method: "POST",
