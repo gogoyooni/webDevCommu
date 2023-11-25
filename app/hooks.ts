@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   acceptApplication,
+  bookmark,
   creaetTeam,
   createAnswer,
   createApplication,
@@ -521,3 +522,20 @@ export const useCancelApplication = (projectId: string) => {
 // };
 
 // @ Project application - accept an applicant for a proejct (leader만 reject 가능)
+
+export const useBookmark = () => {
+  const queryClient = useQueryClient();
+  // Mutations
+  const { mutate, isError, isPending } = useMutation({
+    mutationFn: bookmark,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["bookmark"] });
+    },
+  });
+  return {
+    mutate,
+    isError,
+    isPending,
+  };
+};

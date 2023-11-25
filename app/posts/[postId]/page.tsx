@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useBookmark,
   useCreateAnswer,
   useCreateComment,
   useGetPost,
@@ -11,6 +12,7 @@ import {
 } from "@/app/hooks";
 
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
+import { LuMessageSquare, LuBookmarkPlus } from "react-icons/lu";
 
 import { ChangeEvent, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -19,6 +21,11 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
+import { foramtDate, shareLink } from "@/lib/utils";
+import { LiaShareSolid } from "react-icons/lia";
+import { ItemType } from "@prisma/client";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 const Post = ({ params }: { params: { postId: string } }) => {
   const { data: session } = useSession();
@@ -30,7 +37,7 @@ const Post = ({ params }: { params: { postId: string } }) => {
 
   const [userLikedComment, setUserLikedComment] = useState();
 
-  const onChangeSetReply = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeSetReply = (e: ChangeEvent<HTMLTextAreaElement>) => {
     console.log(e.target.value);
     setReply(e.target.value);
   };
@@ -84,6 +91,12 @@ const Post = ({ params }: { params: { postId: string } }) => {
     isPending: userUnlikeCommentIsPending,
   } = useUserUnlikeComment();
 
+  const {
+    mutate: bookmarkItem,
+    isError: bookmarkItemHasError,
+    isPending: bookmarkIsPending,
+  } = useBookmark();
+
   if (postHasError) {
     return <h3>something went wrong. please try it again</h3>;
   }
@@ -101,67 +114,137 @@ const Post = ({ params }: { params: { postId: string } }) => {
   console.log("liked: ", liked);
 
   return (
-    <div>
+    <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       <div className="mx-auto max-w-3xl">
         <h3> Post Id: {params.postId}</h3>
-        <Button variant={"outline"}>
-          {liked < 0 ? (
-            <FaRegThumbsUp
-              className="w-[20px] h-[30px]"
-              onClick={() => {
-                likePostData({
-                  postId: params.postId,
-                  toWhomId: postData?.data?.authorId,
-                  // toWhomId: postData?.data?.author.name,
-                });
-                toast({
-                  title: `You liked ${postData?.data?.title} post`,
-                  variant: "default",
-                });
-              }}
-            />
-          ) : (
-            <FaThumbsUp
-              onClick={() => {
-                unlikePost({ postId: params.postId });
+        <div></div>
 
-                toast({
-                  title: `You unliked ${postData?.data?.title} post`,
-                  variant: "default",
-                });
-              }}
-              className="w-[20px] h-[30px]"
-            />
-          )}
-        </Button>
+        <div className="bg-white shadow-md p-3 rounded-lg border-zinc-100 border-[1px]">
+          <div className="flex justify-between">
+            <div className="flex gap-3">
+              <div>
+                {liked < 0 ? (
+                  <div className="text-center">
+                    <FaRegThumbsUp
+                      className="w-5 h-5 cursor-pointer"
+                      onClick={() => {
+                        likePostData({
+                          postId: params.postId,
+                          toWhomId: postData?.data?.authorId,
+                          // toWhomId: postData?.data?.author.name,
+                        });
+                        toast({
+                          title: `You liked ${postData?.data?.title} post`,
+                          variant: "default",
+                        });
+                      }}
+                    />
+                    <span className="font-semibold">{postData?.data?._count.likes}</span>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <FaThumbsUp
+                      onClick={() => {
+                        unlikePost({ postId: params.postId });
 
-        <Card>
-          <span>좋아요: {postData?.data?._count.likes}</span>
-          <CardHeader>{postData?.data?.title}</CardHeader>
-          <CardContent>{postData?.data?.content}</CardContent>
-        </Card>
-        <div className="flex gap-3">
-          <div className="flex gap-2 items-center">
-            <Avatar className="w-9 h-9">
-              <AvatarImage src={`${session?.user?.image}`} alt={`${session?.user?.name}`} />
-
-              {/* <AvatarFallback>{session?.user?.name}</AvatarFallback> */}
-            </Avatar>
-            <span>{session?.user?.name}</span>
+                        toast({
+                          title: `Unlike Post`,
+                          description: `You cancelled liking Post '${postData?.data?.title}'`,
+                        });
+                      }}
+                      className="w-5 h-5 cursor-pointer"
+                    />
+                    <span className="font-semibold">{postData?.data?._count.likes}</span>
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className="flex gap-2 text-sm">
+                  <span className="text-xs text-muted-foreground">
+                    Posted by {postData?.data?.author?.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {foramtDate(postData?.data?.createdAt)}
+                  </span>
+                </div>
+                <p className="text-md font-medium py-1">{postData?.data?.title}</p>
+                <p className="text-xs">{postData?.data?.content}</p>
+              </div>
+            </div>
+            {/* <div className="cursor-pointer">
+              <LuBookmarkPlus className="w-5 h-5" />
+            </div> */}
           </div>
-          <div className="flex gap-3">
-            <Input onChange={onChangeSetReply} className="w-[400px]" type="text" />
-            <Button
-              disabled={createCommentIsPending}
-              onClick={() => {
-                createComment({ postId: params.postId, content: reply });
-                setReply("");
-              }}
-            >
-              등록
-            </Button>
+          <div className="flex gap-3 mt-2">
+            <div className="w-[20px]"></div>
+            <div className="flex gap-2 items-center">
+              <div className="flex gap-1 items-center">
+                <LuMessageSquare className="w-5 h-5" />
+                <span>{postData?.data?.comments?.length}</span>
+              </div>
+
+              <div
+                className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                onClick={() => shareLink(postData?.data?.id)}
+              >
+                <LiaShareSolid className="w-5 h-5" />
+                <span>Share</span>
+              </div>
+              <div
+                onClick={() => {
+                  bookmarkItem({
+                    itemType: ItemType.POST,
+                    itemId: postData?.data?.id,
+                  });
+                  toast({
+                    title: `${postData?.data?.title} is saved`,
+                  });
+                }}
+                className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+              >
+                <LuBookmarkPlus className="w-5 h-5" />
+                <span>Save</span>
+              </div>
+            </div>
+          </div>
+          <Separator className="mb-3" />
+          <div className="flex gap-3 px-[12px]">
+            {/* <div className="w-[20px]"></div> */}
+            <div className="w-full px-[12px]">
+              <p className="text-xs mb-1">Comment as {session?.user?.name}</p>
+              {/* <Avatar className="w-9 h-9">
+                <AvatarImage src={`${session?.user?.image}`} alt={`${session?.user?.name}`} />
+              </Avatar>
+              <span>{session?.user?.name}</span> */}
+              <div className="flex gap-3 relative">
+                <Textarea onChange={onChangeSetReply} className="w-full" />
+                {/* <div className="w-[20px]"></div> */}
+              </div>
+              <div className=" w-full">
+                <div className="h-7 flex justify-end mt-2">
+                  <button
+                    onClick={() => {
+                      createComment({ postId: postData?.data?.id, content: reply });
+                      setReply("");
+
+                      toast({
+                        title: "Successfully commented",
+                      });
+                    }}
+                    className={`text-xs bg-gray-400 font-semibold  rounded-2xl py-1 px-4 ${
+                      reply.length > 0
+                        ? "!bg-black text-white cursor-pointer"
+                        : "text-zinc-300 cursor-not-allowed"
+                    }`}
+                  >
+                    Comment
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
         {/* // 댓글 */}
         <div className="flex flex-col">
           {postData?.data?.comments.map((comment: any) => {
