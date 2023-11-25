@@ -302,10 +302,11 @@ export async function rejectApplication(data: any) {
   }).then((res) => res.json());
 }
 
-// @ Bookmark - accept an applicant for a proejct (leader만 reject 가능)
+// @ Bookmark - bookmark a post or project depening on type (post/project)
 export async function bookmark(data: any) {
+  const { type } = data;
   // return fetch(`${BASE_URL}/api/invitation/response`, {
-  return fetch(`${BASE_URL}/api/bookmarks`, {
+  return fetch(`${BASE_URL}/api/bookmarks?type=${type}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

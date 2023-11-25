@@ -242,7 +242,7 @@ enum ItemType {
   PROJECT
 }
 
-model Bookmark {
+model Bookmark { // this should be edited soon with relations with post and project
   id        String  @id @default(cuid())
   userId    String
   user      User    @relation(fields: [userId], references: [id]) // 북마크한 유저

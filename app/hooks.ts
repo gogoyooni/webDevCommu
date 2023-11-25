@@ -175,16 +175,6 @@ export const useUserUnlikeComment = () => {
   };
 };
 
-// export const useGetComments = () => {
-//   const { data, error, isLoading } = useQuery({ queryKey: ["comments"], queryFn: getComments });
-
-//   return {
-//     data,
-//     error,
-//     isLoading,
-//   };
-// };
-
 export const useCreateAnswer = () => {
   const queryClient = useQueryClient();
   // Mutations
@@ -203,16 +193,6 @@ export const useCreateAnswer = () => {
     isPending,
   };
 };
-
-// export const useGetLikePost = () => {
-//   const { data, error, isLoading } = useQuery({ queryKey: ["post"], queryFn: getPost });
-
-//   return {
-//     data,
-//     error,
-//     isLoading,
-//   };
-// };
 
 // export const useLikePost = (postId: string) => {
 export const useLikePost = () => {
@@ -354,11 +334,6 @@ export const useRespondToInvitation = () => {
     isPending,
   };
 };
-
-// interface QueryString {
-//   userType: string;
-//   teamName: string;
-// }
 
 // @ GET - Get a project
 export const useGetProject = (projectId: string) => {

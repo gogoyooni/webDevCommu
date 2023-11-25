@@ -10,7 +10,8 @@ import { NotificationType } from "@prisma/client";
 export async function POST(req: NextRequest) {
   const { userId, commentId, postId, postAuthorId } = await req.json();
 
-  if (!userId || !commentId || !postId || !postAuthorId) {
+  // if (!userId || !commentId || !postId || !postAuthorId) {
+  if (!userId || !commentId) {
     return NextResponse.json({ message: "Your request is invalid" }, { status: 400 });
   }
 
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message: "SUCCESS", response: notification }, { status: 200 });
   } catch (error) {
+    console.log("comment like했을때 나타나는 error", error);
     return NextResponse.json({ message: "Something went wrong" }, { status: 400 });
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateApplication, useGetProject } from "@/app/hooks";
+import { useBookmark, useCreateApplication, useGetProject } from "@/app/hooks";
 import { useSession } from "next-auth/react";
 
 import { sanitize } from "isomorphic-dompurify";
@@ -18,21 +18,15 @@ import {
 } from "react";
 import { ApplicationStatus } from "@prisma/client";
 
-import { format, formatDistanceToNow } from "date-fns";
-import ko from "date-fns/locale/ko";
-import parseISO from "date-fns/parseISO";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cancelApplication } from "@/app/libs/api";
 import { toast } from "@/components/ui/use-toast";
+import { foramtDate } from "@/lib/utils";
 
 const page = ({ params }: { params: { projectId: string } }) => {
   const [dateTime, setDateTime] = useState<Date>();
   const { projectId } = params;
   const { data, error, isLoading } = useGetProject(projectId);
-
-  const [contentHeight, setContentHeight] = useState<number>();
-
-  const contentRef = useRef(null as null | HTMLDivElement);
 
   const {
     mutate: applyForProject,
@@ -59,6 +53,12 @@ const page = ({ params }: { params: { projectId: string } }) => {
     },
   });
 
+  const {
+    mutate: bookmark,
+    isError: bookmarkHasError,
+    isPending: bookmarkIsPending,
+  } = useBookmark();
+
   const { data: session } = useSession(); //유저 로그인 안한 사람은 지원 버튼이 안보이게 해야겠다..
 
   // useEffect(() => {
@@ -72,20 +72,20 @@ const page = ({ params }: { params: { projectId: string } }) => {
   //   }, 6000);
   // }, []);
   // console.log("contentHeight", contentHeight);
-  function foramtDate(date: any) {
-    const d = new Date(date);
-    const now = Date.now();
-    const diff = (now - d.getTime()) / 1000; // 현재 시간과의 차이(초)
-    if (diff < 60 * 1) {
-      // 1분 미만일땐 방금 전 표기
-      return "방금 전";
-    }
-    if (diff < 60 * 60 * 24 * 3) {
-      // 3일 미만일땐 시간차이 출력(몇시간 전, 몇일 전)
-      return formatDistanceToNow(d, { addSuffix: true, locale: ko });
-    }
-    return format(d, "PPP EEE p", { locale: ko }); // 날짜 포맷
-  }
+  // function foramtDate(date: any) {
+  //   const d = new Date(date);
+  //   const now = Date.now();
+  //   const diff = (now - d.getTime()) / 1000; // 현재 시간과의 차이(초)
+  //   if (diff < 60 * 1) {
+  //     // 1분 미만일땐 방금 전 표기
+  //     return "방금 전";
+  //   }
+  //   if (diff < 60 * 60 * 24 * 3) {
+  //     // 3일 미만일땐 시간차이 출력(몇시간 전, 몇일 전)
+  //     return formatDistanceToNow(d, { addSuffix: true, locale: ko });
+  //   }
+  //   return format(d, "PPP EEE p", { locale: ko }); // 날짜 포맷
+  // }
 
   const haveApplied = data?.response?.appliedProjects?.filter(
     (project: any) => project.applicant.name === session?.user?.name
@@ -102,6 +102,7 @@ const page = ({ params }: { params: { projectId: string } }) => {
             <h2 className="text-2xl">{data?.response?.title}</h2>
             {/* <span className="text-sm text-muted-foreground">Writer</span> */}
             <div className="flex gap-2 items-center mt-1">
+              Led by
               <Image
                 key={data?.response?.leader?.id}
                 className="rounded-full "
@@ -114,8 +115,8 @@ const page = ({ params }: { params: { projectId: string } }) => {
             </div>
 
             {/* <span className="text-sm text-muted-foreground">Date</span> */}
-            <p className="mt-2">
-              {data?.response?.createdAt && foramtDate(data?.response?.createdAt)}
+            <p className="text-sm mt-2 text-muted-foreground">
+              Posted {data?.response?.createdAt && foramtDate(data?.response?.createdAt)}
             </p>
             <p className="flex flex-wrap gap-3 mt-3">
               {data?.response?.techStacks
@@ -129,7 +130,7 @@ const page = ({ params }: { params: { projectId: string } }) => {
             </p>
 
             <div
-              ref={contentRef}
+              // ref={contentRef}
               className="border border-zinc-400 rounded-md p-5 mt-4"
               dangerouslySetInnerHTML={{ __html: sanitize(data?.response?.content) }}
             ></div>
@@ -145,10 +146,12 @@ const page = ({ params }: { params: { projectId: string } }) => {
               <span className="text-sm text-muted-foreground">Project Name</span>
               <h3 className="text-lg">{data?.response?.title}</h3>
               <span className="text-sm text-muted-foreground">Leader</span>
-              <p className="">👉+👂🏻 {data?.response?.leader?.name}</p>
+              <p className="">{data?.response?.leader?.name}</p>
               {/* // todo 이거 나중에 좀 더 예쁘게 만들자 */}
-              <span className="text-sm text-muted-foreground">Members</span>
-              <p>{data?.response?.team?._count?.members}</p>
+              <span className="text-sm text-muted-foreground">
+                Members &#40;{<span>{data?.response?.team?._count?.members}</span>}&#41;
+              </span>
+
               <div className="flex my-2 items-center [&>*:nth-child(even)]:ml-[-10px] [&>*:nth-child(even)]:z-10">
                 {data?.response?.team?.members.map((team: any) => (
                   <Image
@@ -161,15 +164,7 @@ const page = ({ params }: { params: { projectId: string } }) => {
                   />
                 ))}
               </div>
-              {/* <p>
-                프로젝트 리더 : <span>프로젝트 리더 아이디- 지금 이 포스트 쓰는 사람..</span>
-              </p> */}
-              {/* <div>
-                <p>
-                  프로젝트 인원 : <span>프로젝트 인원 수</span>
-                </p>
-                <div>여기 프로젝트 그룹 인원 맵함수로 리스트 보여주기</div>
-              </div> */}
+
               {haveApplied?.length > 0 &&
               haveApplied.find(
                 (applicant: any) =>
@@ -183,9 +178,6 @@ const page = ({ params }: { params: { projectId: string } }) => {
                       status: ApplicationStatus.CANCELLED,
                     })
                   }
-                  // spinner={true}
-                  //    label="지원하기"
-                  //    textSize="md"
                   className="bg-red-500 w-full hover:bg-red-400"
                 >
                   {/* // To think about : Rejected된 사람은 지원을 못하게 할 것인지 아니면 재지원이 가능하게 할 것인지 */}
@@ -200,9 +192,6 @@ const page = ({ params }: { params: { projectId: string } }) => {
                       status: ApplicationStatus.PENDING,
                     })
                   }
-                  //   spinner={true}
-                  //    label="지원하기"
-                  //    textSize="md"
                   className="bg-blue-500 w-full"
                 >
                   {/* // To think about : Rejected된 사람은 지원을 못하게 할 것인지 아니면 재지원이 가능하게 할 것인지 */}

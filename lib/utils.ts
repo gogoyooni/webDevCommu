@@ -56,7 +56,7 @@ export function shareLink(postId: string) {
   // Optionally, provide some user feedback
   console.log("URL copied to clipboard:", currentURL);
   toast({
-    title: "URL copied to clipboard",
+    title: "Link copied",
     description: currentURL,
   });
 }

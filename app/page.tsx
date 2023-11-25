@@ -3,15 +3,7 @@
 import Link from "next/link";
 import { useGetPosts } from "./hooks";
 import { Post } from "@/post";
-import { ItemType, User } from "@prisma/client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ItemType } from "@prisma/client";
 
 import { LuMessageSquare, LuBookmarkPlus } from "react-icons/lu";
 import { LiaShareSolid } from "react-icons/lia";
@@ -21,14 +13,12 @@ import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
 import { signIn } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Loader from "./_components/Loader";
 import { Input } from "@/components/ui/input";
 
 import Image from "next/image";
-// import { format, formatDistanceToNow } from "date-fns";
-// import ko from "date-fns/locale/ko";
+
 import { foramtDate, shareLink } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bookmark } from "./libs/api";
@@ -119,9 +109,8 @@ export default function Home() {
                 </div>
 
                 <p className="text-lg mt-1">{post.title}</p>
-                <div className="h-[120px] text-sm mt-2 overflow-hidden bg-gradient-to-b from-transparent from-90% to-zinc-200 ">
-                  {post.content}
-                </div>
+                {/* <div className="h-[120px] text-sm mt-2 overflow-hidden bg-gradient-to-b from-transparent from-90% to-zinc-200 "> */}
+                <div className="h-[120px] text-sm mt-2 overflow-hidden">{post.content}</div>
 
                 <div className="flex gap-2 mt-2">
                   <Link href={`/posts/${post.id}`}>
@@ -137,7 +126,7 @@ export default function Home() {
                     <LiaShareSolid className="w-4 h-4" />
                     <span>Share</span>
                   </div>
-                  <div
+                  {/* <div
                     onClick={() => {
                       _saveItem({
                         itemType: ItemType.POST,
@@ -151,7 +140,7 @@ export default function Home() {
                   >
                     <LuBookmarkPlus className="w-4 h-4" />
                     <span>Save</span>
-                  </div>
+                  </div> */}
                 </div>
                 {/* <CardContent></CardContent> */}
               </div>

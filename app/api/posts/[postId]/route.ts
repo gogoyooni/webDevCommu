@@ -58,6 +58,12 @@ export async function GET(req: NextRequest, { params }: { params: { postId: stri
       // },
       comments: {
         select: {
+          _count: {
+            select: {
+              likes: true,
+            },
+          },
+          createdAt: true,
           likes: {
             select: {
               id: true,
@@ -90,6 +96,11 @@ export async function GET(req: NextRequest, { params }: { params: { postId: stri
           content: true,
           replies: {
             include: {
+              _count: {
+                select: {
+                  likes: true,
+                },
+              },
               likes: {
                 select: {
                   id: true,
