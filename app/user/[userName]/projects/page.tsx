@@ -248,9 +248,9 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                                       </p>
                                     </div>
 
-                                    <div className="ml-auto">
+                                    {/* <div className="ml-auto">
                                       <Button className="bg-red-500">Remove</Button>
-                                    </div>
+                                    </div> */}
                                   </div>
                                 ))}
                               </div>
