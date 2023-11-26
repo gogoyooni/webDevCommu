@@ -1,4 +1,16 @@
-const BASE_URL = "http://localhost:3000";
+let BASE_URL: string;
+
+if (process.env.NODE_ENV === "production") {
+  // Code to run in production mode
+  console.log("Running in production mode");
+
+  BASE_URL = "https://web-dev-commu.vercel.app/";
+} else {
+  // Code to run in development mode
+  console.log("Running in development mode");
+
+  BASE_URL = "http://localhost:3000";
+}
 
 export async function postComment(data: any) {
   return fetch(`${BASE_URL}/api/comments`, {
