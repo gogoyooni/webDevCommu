@@ -213,37 +213,39 @@ const Post = ({ params }: { params: { postId: string } }) => {
             <div className="flex gap-3 px-[12px]">
               {/* <div className="w-[20px]"></div> */}
               <div className="w-full px-[12px]">
-                <p className="text-xs mb-1">Comment as {session?.user?.name}</p>
-                {/* <Avatar className="w-9 h-9">
-                <AvatarImage src={`${session?.user?.image}`} alt={`${session?.user?.name}`} />
-              </Avatar>
-              <span>{session?.user?.name}</span> */}
-                <div className="flex gap-3">
-                  <Textarea value={reply} onChange={onChangeSetReply} className="w-full" />
-                  {/* <div className="w-[20px]"></div> */}
-                </div>
-                <div className=" w-full">
-                  <div className="h-7 flex justify-end mt-2">
-                    <button
-                      onClick={() => {
-                        createComment({ postId: postData?.data?.id, content: reply });
+                {session?.user && (
+                  <>
+                    <p className="text-xs mb-1">Comment as {session?.user?.name}</p>
 
-                        setReply("");
+                    <div className="flex gap-3">
+                      <Textarea value={reply} onChange={onChangeSetReply} className="w-full" />
+                      {/* <div className="w-[20px]"></div> */}
+                    </div>
+                    <div className=" w-full">
+                      <div className="h-7 flex justify-end mt-2">
+                        <button
+                          onClick={() => {
+                            createComment({ postId: postData?.data?.id, content: reply });
 
-                        toast({
-                          title: "Successfully commented",
-                        });
-                      }}
-                      className={`text-xs bg-gray-400 font-semibold  rounded-2xl py-1 px-4 ${
-                        reply.length > 0
-                          ? "!bg-black text-white cursor-pointer"
-                          : "text-zinc-300 cursor-not-allowed"
-                      }`}
-                    >
-                      Comment
-                    </button>
-                  </div>
-                </div>
+                            setReply("");
+
+                            toast({
+                              title: "Successfully commented",
+                            });
+                          }}
+                          className={`text-xs bg-gray-400 font-semibold  rounded-2xl py-1 px-4 ${
+                            reply.length > 0
+                              ? "!bg-black text-white cursor-pointer"
+                              : "text-zinc-300 cursor-not-allowed"
+                          }`}
+                        >
+                          Comment
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {/* // 댓글 */}
                 <div className="flex flex-col">
                   {postData?.data?.comments.map((comment: any) => {
@@ -403,17 +405,20 @@ const Comment = ({
                 </>
                 // </div>
               )}
-              <div
-                onClick={() => setAnswerIsClicked(!answerIsClicked)}
-                className="ml-2 flex gap-1 items-center text-muted-foreground cursor-pointer"
-              >
-                <LuMessageSquare className="w-5 h-5" />
-                <span className="text-xs font-medium">Reply</span>
-                {/* <span>{postData?.data?.comments?.length}</span> */}
-              </div>
+
+              {session?.user && (
+                <div
+                  onClick={() => setAnswerIsClicked(!answerIsClicked)}
+                  className="ml-2 flex gap-1 items-center text-muted-foreground cursor-pointer"
+                >
+                  <LuMessageSquare className="w-5 h-5" />
+                  <span className="text-xs font-medium">Reply</span>
+                  {/* <span>{postData?.data?.comments?.length}</span> */}
+                </div>
+              )}
             </div>
 
-            {answerIsClicked && (
+            {session?.user && answerIsClicked && (
               <div className="flex gap-3 mt-2">
                 <div className="w-full pl-[20px]">
                   {/* <p className="text-xs mb-1">Reply as {session?.user?.name}</p> */}

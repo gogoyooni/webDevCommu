@@ -8,20 +8,20 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 export async function GET(req: NextRequest, { params }: { params: { postId: string } }) {
   const postId = params.postId;
 
-  const session: any = await getServerSession(authOptions);
-  if (!session.user) {
-    return NextResponse.json({ message: "Not allowed" }, { status: 403 });
-  }
+  // const session: any = await getServerSession(authOptions);
+  // if (!session.user) {
+  //   return NextResponse.json({ message: "Not allowed" }, { status: 403 });
+  // }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      email: session?.user?.email,
-    },
-  });
+  // const user = await prisma.user.findFirst({
+  //   where: {
+  //     email: session?.user?.email,
+  //   },
+  // });
 
-  if (!user) {
-    return NextResponse.json({ message: "User is not found" }, { status: 403 });
-  }
+  // if (!user) {
+  //   return NextResponse.json({ message: "User is not found" }, { status: 403 });
+  // }
 
   const data = await prisma.post.findFirst({
     where: {

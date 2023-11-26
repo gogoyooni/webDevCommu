@@ -48,7 +48,7 @@ import { Post } from "@prisma/client";
 export async function GET(req: NextRequest) {
   const session: any = await getServerSession(authOptions);
   let data;
-  if (!session.user) {
+  if (!session?.user) {
     // return NextResponse.json({ message: "Not allowed" }, { status: 403 });
     data = await prisma.post.findMany({
       include: {

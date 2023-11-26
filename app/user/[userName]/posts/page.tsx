@@ -68,7 +68,7 @@ const page = () => {
 
   return (
     // <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
-    <div className="w-full min-h-screen max-h-full pt-6 pb-9">
+    <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {isLoading ? (
         <Loader className="mx-auto w-10 h-10 animate-spin" />
       ) : (
