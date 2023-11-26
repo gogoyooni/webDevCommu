@@ -139,7 +139,7 @@ const Notifications = ({ params }: { params: { userName: string } }) => {
   );
 };
 
-export default page;
+export default Notifications;
 
 type SenderUser = {
   id: string;
