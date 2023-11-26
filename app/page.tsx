@@ -24,6 +24,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bookmark } from "./libs/api";
 
 export default function Home() {
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useGetPosts();
   const { data: session } = useSession();
 
@@ -52,7 +53,6 @@ export default function Home() {
 
   // console.log("data at homepage: ", data);
 
-  const queryClient = useQueryClient();
   // Mutations
   const {
     mutate: _saveItem,

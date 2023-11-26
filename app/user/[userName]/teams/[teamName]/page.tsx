@@ -21,7 +21,7 @@ const ReactQuill = dynamic(() => import("react-quill"), {
   loading: () => <Loader className="w-6 h-6 animate-spin" />,
 });
 
-const page = ({
+const Team = ({
   params,
   searchParams,
 }: {
@@ -160,4 +160,4 @@ const page = ({
   );
 };
 
-export default page;
+export default Team;

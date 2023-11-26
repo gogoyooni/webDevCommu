@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const page = ({ params }: { params: { userName: string } }) => {
+const Notifications = ({ params }: { params: { userName: string } }) => {
   const [tabValue, setTabValue] = useState("history");
   const { data, error, isLoading } = useGetNotifications(tabValue);
 
@@ -76,7 +76,7 @@ const page = ({ params }: { params: { userName: string } }) => {
                 <Loader className="mx-auto w-8 h-8 animate-spin" />
               ) : (
                 data?.response?.map((history: any) => {
-                  return <History history={history} />;
+                  return <History key={history.id} history={history} />;
                 })
               )}
             </div>
@@ -89,6 +89,7 @@ const page = ({ params }: { params: { userName: string } }) => {
                 data?.response?.map((invitation: any) => {
                   return (
                     <Invitation
+                      key={invitation.id}
                       invitation={invitation}
                       respondToInvitation={repspondToInvitation}
                       respondToInvitationHasError={respondToInvitationHasError}

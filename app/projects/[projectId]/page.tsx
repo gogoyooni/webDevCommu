@@ -23,7 +23,8 @@ import { cancelApplication } from "@/app/libs/api";
 import { toast } from "@/components/ui/use-toast";
 import { foramtDate } from "@/lib/utils";
 
-const page = ({ params }: { params: { projectId: string } }) => {
+const Project = ({ params }: { params: { projectId: string } }) => {
+  const queryClient = useQueryClient();
   const [dateTime, setDateTime] = useState<Date>();
   const { projectId } = params;
   const { data, error, isLoading } = useGetProject(projectId);
@@ -34,7 +35,6 @@ const page = ({ params }: { params: { projectId: string } }) => {
     isPending: applyForProjectIsPending,
   } = useCreateApplication(projectId);
 
-  const queryClient = useQueryClient();
   // Mutations
   const {
     mutate: _cancelApplication,
@@ -206,4 +206,4 @@ const page = ({ params }: { params: { projectId: string } }) => {
   );
 };
 
-export default page;
+export default Project;

@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 //   REJECTED = "REJECTED",
 // }
 
-const page = () => {
+const Invitation = () => {
   const { data, error, isLoading } = useGetInvitations();
 
   const { data: session } = useSession();
@@ -139,4 +139,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Invitation;

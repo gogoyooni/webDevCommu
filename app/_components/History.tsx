@@ -23,7 +23,7 @@ const History = ({ history }: { history: any }) => {
       >
         <div>
           <Link href={`/posts/${history.comment.postId}`}>
-            you liked "{history.comment.content}"
+            you liked &quot;{history.comment.content}&quot;
           </Link>
         </div>
         <div className="text-sm">{foramtDate(history.createdAt)}</div>

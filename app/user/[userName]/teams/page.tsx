@@ -58,7 +58,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 
-const page = () => {
+const Teams = () => {
   const { data, error, isLoading } = useGetTeams();
 
   const [userEmail, setUserEmail] = useState("");
@@ -162,7 +162,7 @@ const page = () => {
             <div className="mb-2">
               <h3 className="text-2xl font-semibold">
                 My Teams
-                <p className="text-sm text-muted-foreground">Teams You're In</p>
+                <p className="text-sm text-muted-foreground">Teams You&apos;re In</p>
               </h3>
             </div>
             {/* // 유저가 리더로서 있는 팀 시작 */}
@@ -193,7 +193,7 @@ const page = () => {
                       <TableBody>
                         {data?.leadingTeams?.length > 0 &&
                           data?.leadingTeams?.map((org: any) => (
-                            <TableRow>
+                            <TableRow key={org.id}>
                               <TableCell className="w-[200px] font-medium">
                                 <Link
                                   // href={`/user/${session?.user?.name}/teams/${org.team.teamName}?userType=LEADER`}
@@ -208,6 +208,7 @@ const page = () => {
                                 <div className="flex items-center [&>*:nth-child(even)]:ml-[-10px]">
                                   {org?.members?.map((member: any) => (
                                     <Image
+                                      key={member.member.name}
                                       className="rounded-full"
                                       alt={member.member.name}
                                       src={member.member.image}
@@ -389,7 +390,9 @@ const page = () => {
                         <SelectLabel>Team</SelectLabel>
                         {data?.leadingTeams?.length > 0
                           ? data?.leadingTeams?.map((team: any) => (
-                              <SelectItem value={team.teamName}>{team.teamName}</SelectItem>
+                              <SelectItem key={team.id} value={team.teamName}>
+                                {team.teamName}
+                              </SelectItem>
                             ))
                           : "None"}
                       </SelectGroup>
@@ -405,7 +408,7 @@ const page = () => {
                     )}
                     {invitationsToTeam?.length > 0 &&
                       invitationsToTeam?.map((user: any) => (
-                        <div className="flex gap-2 justify-between">
+                        <div key={user.id} className="flex gap-2 justify-between">
                           <div className="flex gap-3 items-center">
                             <Image
                               className="rounded-full"
@@ -478,6 +481,7 @@ const page = () => {
                             <TableCell className="flex items-center [&>*:nth-child(even)]:ml-[-10px]">
                               {membership?.team?.members?.map((member: any) => (
                                 <Image
+                                  key={member.member.name}
                                   className="rounded-full"
                                   alt={member.member.name}
                                   src={member.member.image}
@@ -533,4 +537,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Teams;

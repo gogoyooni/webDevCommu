@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const page = () => {
+const Bookmarks = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -81,4 +81,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Bookmarks;

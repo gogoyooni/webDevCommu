@@ -20,14 +20,12 @@ import Loader from "@/app/_components/Loader";
 
 const Projects = ({ params }: { params: { userName: string } }) => {
   const { userName } = params;
+  const { data: session } = useSession();
 
   const { data, error, isLoading } = useGetMyProjects(userName);
 
   if (error) return <div>Something is wrong. Try again later</div>;
-
-  //   const {} = useAcceptApplication();
-
-  const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
   const {
     mutate: _acceptApplication,
@@ -36,7 +34,6 @@ const Projects = ({ params }: { params: { userName: string } }) => {
   } = useMutation({
     mutationFn: (data: any) => acceptApplication(data),
     onSuccess: () => {
-      const queryClient = useQueryClient();
       // Invalidate and refetch
 
       queryClient.invalidateQueries({ queryKey: ["project"] });
@@ -54,8 +51,6 @@ const Projects = ({ params }: { params: { userName: string } }) => {
   } = useMutation({
     mutationFn: (data: any) => acceptApplication(data),
     onSuccess: () => {
-      const queryClient = useQueryClient();
-
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["project"] });
       toast({
@@ -235,7 +230,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                               <span className="text-sm text-muted-foreground">Members</span>
                               <div className="flex flex-col gap-2 mt-1">
                                 {project.team?.members?.map((member: any) => (
-                                  <div className="flex gap-2 items-center">
+                                  <div key-={member.id} className="flex gap-2 items-center">
                                     <div className="">
                                       <Image
                                         className="rounded-full"
@@ -369,7 +364,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                                 <span className="text-sm text-muted-foreground">Members</span>
                                 <div className="flex flex-col gap-2 mt-1">
                                   {project.team?.members?.map((member: any) => (
-                                    <div className="flex gap-2 items-center">
+                                    <div key={member.id} className="flex gap-2 items-center">
                                       <div className="">
                                         <Image
                                           className="rounded-full"

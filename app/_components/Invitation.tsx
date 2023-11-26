@@ -90,7 +90,7 @@ const Invitation = ({
       >
         <div>
           <Link href={`/posts/${invitation.comment.postId}`}>
-            you liked "{invitation.comment.content}"
+            you liked &quot;{invitation.comment.content}&quot;
           </Link>
         </div>
         <div className="text-sm">{foramtDate(invitation.createdAt)}</div>

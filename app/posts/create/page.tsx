@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const page = () => {
+const PostCreate = () => {
   const [post, setPost] = useState({
     title: "",
     content: "",
@@ -70,4 +70,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default PostCreate;

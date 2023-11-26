@@ -14,7 +14,7 @@ import { LiaShareSolid } from "react-icons/lia";
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
-const page = () => {
+const MyPosts = () => {
   const { data: session } = useSession();
 
   if (!session?.user) {
@@ -141,4 +141,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default MyPosts;

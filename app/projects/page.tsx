@@ -12,7 +12,7 @@ import { LuBookmarkPlus, LuFolderX } from "react-icons/lu";
 import { toast } from "@/components/ui/use-toast";
 import { ItemType } from "@prisma/client";
 
-const page = () => {
+const Projects = () => {
   const { data: session } = useSession();
 
   if (!session?.user) {
@@ -111,4 +111,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Projects;
