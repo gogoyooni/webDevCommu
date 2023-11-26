@@ -231,7 +231,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                               <span className="text-sm text-muted-foreground">Members</span>
                               <div className="flex flex-col gap-2 mt-1">
                                 {project.team?.members?.map((member: any) => (
-                                  <div key-={member.member.id} className="flex gap-2 items-center">
+                                  <div key={member.member.id} className="flex gap-2 items-center">
                                     <div className="">
                                       <Image
                                         className="rounded-full"
