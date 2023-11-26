@@ -24,7 +24,6 @@ const Projects = ({ params }: { params: { userName: string } }) => {
 
   const { data, error, isLoading } = useGetMyProjects(userName);
 
-  if (error) return <div>Something is wrong. Try again later</div>;
   const queryClient = useQueryClient();
 
   const {
@@ -59,6 +58,8 @@ const Projects = ({ params }: { params: { userName: string } }) => {
       });
     },
   });
+
+  if (error) return <div>Something is wrong. Try again later</div>;
 
   //   const useAcceptApplication = (projectId: string) => {
   //     // const queryClient = useQueryClient();
@@ -137,7 +138,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                 {/* Hello, {session?.user?.name}!  */}
                 My Projects as a leader
                 {projectsAsLeader?.length > 0 && JSON.stringify(projectsAsLeader?.appliedProjects)}
-                <p className="text-sm text-muted-foreground">Projects You're On</p>
+                <p className="text-sm text-muted-foreground">Projects You&apos;re On</p>
               </h3>
             </div>
 
@@ -201,7 +202,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                     )}
                     {projectsAsLeader.length > 0 &&
                       projectsAsLeader?.map((project: any) => (
-                        <div className="flex gap-5 justify-center">
+                        <div key={project.id} className="flex gap-5 justify-center">
                           <div
                             className="my-2 w-[560px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]"
                             key={project.teamId}
@@ -230,7 +231,10 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                               <span className="text-sm text-muted-foreground">Members</span>
                               <div className="flex flex-col gap-2 mt-1">
                                 {project.team?.members?.map((member: any) => (
-                                  <div key-={member.id} className="flex gap-2 items-center">
+                                  <div
+                                    key-={member.member.name}
+                                    className="flex gap-2 items-center"
+                                  >
                                     <div className="">
                                       <Image
                                         className="rounded-full"
@@ -345,7 +349,7 @@ const Projects = ({ params }: { params: { userName: string } }) => {
                     <div className="">
                       {projectsAsMember.length > 0 &&
                         projectsAsMember?.map((project: any) => (
-                          <div className="flex gap-5 justify-center">
+                          <div key={project.teamId} className="flex gap-5 justify-center">
                             <div
                               className="my-2 w-[560px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]"
                               key={project.teamId}

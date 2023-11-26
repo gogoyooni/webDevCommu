@@ -18,7 +18,13 @@ const Notifications = ({ params }: { params: { userName: string } }) => {
 
   const { data: session } = useSession();
 
-  console.log("notification data", data);
+  // console.log("notification data", data);
+
+  const {
+    mutate: repspondToInvitation,
+    isError: respondToInvitationHasError,
+    isPending: respondToInvitationIsPending,
+  } = useRespondToInvitation();
 
   if (error) {
     return <div>Something went wrong.. please try it again later</div>;
@@ -39,12 +45,6 @@ const Notifications = ({ params }: { params: { userName: string } }) => {
   //     noti.notificationType === "REJECT_INVITATION" ||
   //     noti.notificationType === "SEND_INVITATION" // 내가 팀 리더일 때
   // );
-
-  const {
-    mutate: repspondToInvitation,
-    isError: respondToInvitationHasError,
-    isPending: respondToInvitationIsPending,
-  } = useRespondToInvitation();
 
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">

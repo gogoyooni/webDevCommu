@@ -23,15 +23,15 @@ const MyPosts = () => {
 
   const { data, error, isLoading } = useGetMyPosts(session?.user?.name as string);
 
-  if (error) return <div>Something went wrong. Please try again later</div>;
-
-  console.log(data);
-
   const {
     mutate: deletePost,
     isError: deletePostHasError,
     isPending: deletePostIsPending,
   } = useDeletePost();
+
+  if (error) return <div>Something went wrong. Please try again later</div>;
+
+  // console.log(data);
 
   interface CommentType {
     id: string;

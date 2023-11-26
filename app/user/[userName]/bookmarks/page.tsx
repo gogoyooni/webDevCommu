@@ -58,21 +58,21 @@ const Bookmarks = () => {
             <TabsTrigger value="project">Project</TabsTrigger>
           </TabsList>
           <TabsContent value="post">
-            <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
+            {/* <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
               {isLoading ? (
                 <Loader className="mx-auto w-8 h-8 animate-spin" />
               ) : (
                 data?.response?.map((post: any) => <div></div>)
               )}
-            </div>
+            </div> */}
           </TabsContent>
           <TabsContent value="project">
             <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
-              {isLoading ? (
+              {/* {isLoading ? (
                 <Loader className="mx-auto w-8 h-8 animate-spin" />
               ) : (
                 data?.response?.map((project: any) => <div></div>)
-              )}
+              )} */}
             </div>
           </TabsContent>
         </Tabs>

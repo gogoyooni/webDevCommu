@@ -30,6 +30,19 @@ export default function Home() {
 
   const router = useRouter();
 
+  // Mutations
+  const {
+    mutate: _saveItem,
+    isError: _saveItemHasError,
+    isPending: _saveItemIsPending,
+  } = useMutation({
+    mutationFn: bookmark,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["bookmark"] });
+    },
+  });
+
   if (error) {
     return <h3>something is wrong .. try it again later</h3>;
   }
@@ -52,19 +65,6 @@ export default function Home() {
   };
 
   // console.log("data at homepage: ", data);
-
-  // Mutations
-  const {
-    mutate: _saveItem,
-    isError: _saveItemHasError,
-    isPending: _saveItemIsPending,
-  } = useMutation({
-    mutationFn: bookmark,
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["bookmark"] });
-    },
-  });
 
   return (
     <div className="mx-auto bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
