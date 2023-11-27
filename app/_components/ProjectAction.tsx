@@ -27,7 +27,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { bookmark, deleteProject, finishProject } from "../libs/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { ItemType, ProjectStatus } from "@prisma/client";
+import { ProjectStatus } from "@prisma/client";
 
 const ProjectAction = ({
   data,

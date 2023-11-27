@@ -35,7 +35,9 @@ model User {
   memberProjects  ProjectMembership[] @relation("member") // 멤버로 있는 프로젝트
   applicants   ProjectApplication[]    @relation("applicant") // 지원한 프로젝트
   
-  bookmarks    Bookmark[] 
+  // bookmarks    Bookmark[] 
+  bookmarkedPosts       BookmarkedPost[]
+  bookmarkedProjects BookmarkedProject[]
 }
 
 model Post {
@@ -48,12 +50,24 @@ model Post {
   comments     Comment[]
 
   likes        Like[]
-  notifications Notification[]
-   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+notifications Notification[]
+  bookmarkedBy BookmarkedPost[]
 
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+// Add a new model for bookmarked posts
+model BookmarkedPost {
+  id      String @id @default(cuid())
+  postId  String
+  userId  String
+  post    Post   @relation(fields: [postId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model Comment {
   id        String     @id @default(cuid())
@@ -163,7 +177,20 @@ model Project {
   techStackId  String
   techStacks ProjectTechStack[]
   appliedProjects ProjectApplication[]
+  bookmarkedBy     BookmarkedProject[]
 }
+
+// Add a new model for bookmarked projects
+model BookmarkedProject {
+  id         String @id @default(cuid())
+  projectId  String
+  userId     String
+  project    Project @relation(fields: [projectId], references: [id])
+  user       User    @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 
 enum ApplicationStatus {
   CANCELLED
@@ -242,15 +269,14 @@ enum ItemType {
   PROJECT
 }
 
-model Bookmark { // this should be edited soon with relations with post and project
-  id        String  @id @default(cuid())
-  userId    String
-  user      User    @relation(fields: [userId], references: [id]) // 북마크한 유저
-  itemType  ItemType
-  itemId    String
-  createdAt DateTime @default(now())
+// model Bookmark { // this should be edited soon with relations with post and project
+//   id        String  @id @default(cuid())
+//   userId    String
+//   user      User    @relation(fields: [userId], references: [id]) // 북마크한 유저
+//   itemType  ItemType
+//   itemId    String
+//   createdAt DateTime @default(now())
 
-  // 유저가 한번만 특정 아이템만 북마크할 수 있게 인덱스 추가
-  @@unique([userId, itemType, itemId])
-}
-
+//   // 유저가 한번만 특정 아이템만 북마크할 수 있게 인덱스 추가
+//   @@unique([userId, itemType, itemId])
+// }

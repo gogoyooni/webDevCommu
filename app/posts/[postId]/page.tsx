@@ -23,7 +23,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { foramtDate, shareLink } from "@/lib/utils";
 import { LiaShareSolid } from "react-icons/lia";
-import { ItemType } from "@prisma/client";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";

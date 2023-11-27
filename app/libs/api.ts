@@ -327,6 +327,19 @@ export async function bookmark(data: any) {
   }).then((res) => res.json());
 }
 
+// @ Bookmark - bookmark a post or project depening on type (post/project)
+export async function unbookmark(data: any) {
+  const { type } = data;
+  // return fetch(`${BASE_URL}/api/invitation/response`, {
+  return fetch(`${BASE_URL}/api/bookmarks?type=${type}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
 // @ Membership - Quit a team where a user joined (DELETE data of membership)
 export async function quitTeam(data: any) {
   const { userName } = data;

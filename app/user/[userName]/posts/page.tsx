@@ -8,11 +8,15 @@ import { foramtDate, shareLink } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
-import { LuThumbsUp, LuMessageSquare, LuBan } from "react-icons/lu";
+import { LuThumbsUp, LuMessageSquare, LuBan, LuBookmarkPlus } from "react-icons/lu";
+import { MdBookmark } from "react-icons/md";
+
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 import { LiaShareSolid } from "react-icons/lia";
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
+import { bookmark } from "@/app/libs/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const MyPosts = () => {
   const { data: session } = useSession();
@@ -28,6 +32,26 @@ const MyPosts = () => {
     isError: deletePostHasError,
     isPending: deletePostIsPending,
   } = useDeletePost();
+
+  // Mutations
+  const {
+    mutate: _saveItem,
+    isError: _saveItemHasError,
+    isPending: _saveItemIsPending,
+  } = useMutation({
+    mutationFn: bookmark,
+    onSuccess: () => {
+      const queryClient = useQueryClient();
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["bookmark"] });
+    },
+    onError: () => {
+      toast({
+        title: "FAIL",
+        description: "Bookmark failed. Try again",
+      });
+    },
+  });
 
   if (error) return <div>Something went wrong. Please try again later</div>;
 
@@ -62,6 +86,7 @@ const MyPosts = () => {
       githubUserName: string;
       createdAt: string;
     };
+    isBookmarked: boolean;
     comments: CommentType[];
     likes: LikeType[];
   }
@@ -123,6 +148,31 @@ const MyPosts = () => {
                       >
                         <LuBan className="w-5 h-5" />
                         <span>Remove</span>
+                      </div>
+                      <div
+                        onClick={() => {
+                          _saveItem({
+                            type: "post",
+                            postId: post.id,
+                          });
+                          toast({
+                            title: "SUCCESS",
+                            description: `Bookmarked ${post.title}`,
+                          });
+                        }}
+                        className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                      >
+                        {post?.isBookmarked ? (
+                          <>
+                            <MdBookmark className="w-4 h-4" />
+                            <span>Saved</span>
+                          </>
+                        ) : (
+                          <>
+                            <LuBookmarkPlus className="w-4 h-4" />
+                            <span>Save</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

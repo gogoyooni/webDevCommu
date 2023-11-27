@@ -10,7 +10,6 @@ import NoProject from "../_components/NoProject";
 import { foramtDate } from "@/lib/utils";
 import { LuBookmarkPlus, LuFolderX } from "react-icons/lu";
 import { toast } from "@/components/ui/use-toast";
-import { ItemType } from "@prisma/client";
 
 const Projects = () => {
   const { data: session } = useSession();

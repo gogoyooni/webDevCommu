@@ -161,7 +161,7 @@ const SideNavigation = () => {
           </TooltipProvider>
         )}
         {/* My Bookmarks */}
-        {/* {session?.user && (
+        {session?.user && (
           <TooltipProvider delayDuration={300}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -186,7 +186,7 @@ const SideNavigation = () => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )} */}
+        )}
         {session?.user && (
           <TooltipProvider delayDuration={300}>
             <Tooltip>

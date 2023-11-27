@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useGetPosts } from "./hooks";
 import { Post } from "@/post";
-import { ItemType } from "@prisma/client";
 
 import { LuMessageSquare, LuBookmarkPlus } from "react-icons/lu";
 import { LiaShareSolid } from "react-icons/lia";
@@ -21,7 +20,8 @@ import Image from "next/image";
 
 import { foramtDate, shareLink } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { bookmark } from "./libs/api";
+import { bookmark, unbookmark } from "./libs/api";
+import { MdBookmark } from "react-icons/md";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -39,7 +39,32 @@ export default function Home() {
     mutationFn: bookmark,
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["bookmark"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {
+      toast({
+        title: "FAIL",
+        description: "Bookmarking the post failed",
+      });
+    },
+  });
+
+  const {
+    mutate: _unbookmarkItem,
+    isError: _unbookmarkItemHasError,
+    isPending: _unbookmarkItemIsPending,
+  } = useMutation({
+    mutationFn: unbookmark,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {
+      toast({
+        title: "FAIL",
+        description: "Unbookmarking failed",
+        variant: "destructive",
+      });
     },
   });
 
@@ -126,21 +151,41 @@ export default function Home() {
                     <LiaShareSolid className="w-4 h-4" />
                     <span>Share</span>
                   </div>
-                  {/* <div
-                    onClick={() => {
-                      _saveItem({
-                        itemType: ItemType.POST,
-                        itemId: post.id,
-                      });
-                      toast({
-                        title: `${post.title} is saved`,
-                      });
-                    }}
-                    className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
-                  >
-                    <LuBookmarkPlus className="w-4 h-4" />
-                    <span>Save</span>
-                  </div> */}
+                  {post.isBookmarked ? (
+                    <div
+                      onClick={() => {
+                        _unbookmarkItem({
+                          type: "post",
+                          postId: post.id,
+                        });
+                        toast({
+                          title: "SUCCESS",
+                          description: `Unbookmarked ${post.title}`,
+                        });
+                      }}
+                      className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                    >
+                      <MdBookmark className="w-4 h-4" />
+                      <span>Saved</span>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => {
+                        _saveItem({
+                          type: "post",
+                          postId: post.id,
+                        });
+                        toast({
+                          title: "SUCCESS",
+                          description: `Bookmarked ${post.title}`,
+                        });
+                      }}
+                      className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                    >
+                      <LuBookmarkPlus className="w-4 h-4" />
+                      <span>Save</span>
+                    </div>
+                  )}
                 </div>
                 {/* <CardContent></CardContent> */}
               </div>

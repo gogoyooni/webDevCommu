@@ -93,7 +93,14 @@ export async function GET(req: NextRequest) {
           select: {
             name: true,
             image: true,
-            bookmarks: true,
+            // bookmarkedPosts: {
+            //   where: {
+            //     userId: user.id,
+            //   },
+            //   select: {
+            //     postId: true
+            //   }
+            // }
           },
         },
         comments: true,
@@ -108,6 +115,25 @@ export async function GET(req: NextRequest) {
         // },
       },
     });
+
+    // Fetch bookmarked posts for the logged-in user
+    const bookmarkedPosts = await prisma.bookmarkedPost.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        postId: true,
+      },
+    });
+
+    // Update the allPosts array to include bookmark information
+    data = data.map((post) => {
+      return {
+        ...post,
+        isBookmarked: bookmarkedPosts.some((bp) => bp.postId === post.id),
+      };
+    });
+
     return NextResponse.json({ data }, { status: 200 });
   }
 
