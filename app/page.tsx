@@ -137,10 +137,10 @@ export default function Home() {
                 {/* <div className="h-[120px] text-sm mt-2 overflow-hidden bg-gradient-to-b from-transparent from-90% to-zinc-200 "> */}
                 <div className="h-[120px] text-sm mt-2 overflow-hidden">{post.content}</div>
 
-                <div className="flex gap-2 mt-2">
+                <div className="flex mt-2">
                   <Link href={`/posts/${post.id}`}>
                     <div className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer">
-                      <LuMessageSquare className="w-4 h-4" />
+                      <LuMessageSquare className="w-5 h-5" />
                       <span>{post.comments.length} Comments</span>
                     </div>
                   </Link>
@@ -148,7 +148,7 @@ export default function Home() {
                     onClick={() => shareLink(post.id)}
                     className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
                   >
-                    <LiaShareSolid className="w-4 h-4" />
+                    <LiaShareSolid className="w-5 h-5" />
                     <span>Share</span>
                   </div>
                   {post.isBookmarked ? (
@@ -165,7 +165,7 @@ export default function Home() {
                       }}
                       className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
                     >
-                      <MdBookmark className="w-4 h-4" />
+                      <MdBookmark className="w-5 h-5" />
                       <span>Saved</span>
                     </div>
                   ) : (
@@ -182,7 +182,7 @@ export default function Home() {
                       }}
                       className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
                     >
-                      <LuBookmarkPlus className="w-4 h-4" />
+                      <LuBookmarkPlus className="w-5 h-5" />
                       <span>Save</span>
                     </div>
                   )}

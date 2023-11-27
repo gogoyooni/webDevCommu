@@ -93,26 +93,10 @@ export async function GET(req: NextRequest) {
           select: {
             name: true,
             image: true,
-            // bookmarkedPosts: {
-            //   where: {
-            //     userId: user.id,
-            //   },
-            //   select: {
-            //     postId: true
-            //   }
-            // }
           },
         },
         comments: true,
         likes: true,
-        // bookmarks: {
-        //   where: {
-        //     userId: user.id,
-        //   },
-        //   select: {
-        //     id: true,
-        //   },
-        // },
       },
     });
 

@@ -26,22 +26,49 @@ export async function GET(req: NextRequest, { params }: { params: { userName: st
     return NextResponse.json({ message: "User is not found" }, { status: 403 });
   }
 
-  // Get data that a user created
-  const userPosts = await prisma.post.findMany({
-    where: {
-      authorId: user.id,
-    },
-    orderBy: {
-      createdAt: "desc", // You can adjust the sorting based on your requirements
-    },
-    include: {
-      author: true, // Include the author details if needed
-      comments: true, // Include comments if needed
-      likes: true, // Include likes if needed
-    },
-  });
+  let data;
+  let bookmarkedPosts: any;
 
-  return NextResponse.json({ message: "SUCCESS", response: userPosts }, { status: 200 });
+  try {
+    // Get data that a user created
+    data = await prisma.post.findMany({
+      where: {
+        authorId: user.id,
+      },
+      orderBy: {
+        createdAt: "desc", // You can adjust the sorting based on your requirements
+      },
+      include: {
+        author: true, // Include the author details if needed
+        comments: true, // Include comments if needed
+        likes: true, // Include likes if needed
+      },
+    });
+
+    // Fetch bookmarked posts for the logged-in user
+    bookmarkedPosts = await prisma.bookmarkedPost.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        postId: true,
+      },
+    });
+    // Update the allPosts array to include bookmark information
+    data = data.map((post) => {
+      return {
+        ...post,
+        isBookmarked: bookmarkedPosts.some((bp: any) => bp.postId === post.id),
+      };
+    });
+
+    return NextResponse.json({ message: "SUCCESS", response: data }, { status: 200 });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: "Something went wrong" }, { status: 400 });
+  }
+
+  // return NextResponse.json({ message: "SUCCESS", response: data }, { status: 200 });
 }
 
 // @ Posts - Delete my posts

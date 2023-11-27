@@ -352,7 +352,7 @@ export const useGetProject = (projectId: string) => {
 // @ GET - Get Projects
 export const useGetProjects = () => {
   const { data, error, isLoading } = useQuery({
-    queryKey: ["project"],
+    queryKey: ["projects"],
     queryFn: getProjects,
   });
 

@@ -15,7 +15,7 @@ import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 import { LiaShareSolid } from "react-icons/lia";
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { bookmark } from "@/app/libs/api";
+import { bookmark, unbookmark } from "@/app/libs/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const MyPosts = () => {
@@ -42,12 +42,31 @@ const MyPosts = () => {
     mutationFn: bookmark,
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["bookmark"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: () => {
       toast({
         title: "FAIL",
         description: "Bookmark failed. Try again",
+      });
+    },
+  });
+
+  const {
+    mutate: _unbookmarkItem,
+    isError: _unbookmarkItemHasError,
+    isPending: _unbookmarkItemIsPending,
+  } = useMutation({
+    mutationFn: unbookmark,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: () => {
+      toast({
+        title: "FAIL",
+        description: "Unbookmarking failed",
+        variant: "destructive",
       });
     },
   });
@@ -121,22 +140,26 @@ const MyPosts = () => {
                       <span>Posted by {post.author.name}</span>
                       <span>{foramtDate(post.createdAt)}</span>
                     </div>
-                    <div className="flex gap-3">
-                      <Link href={`/posts/${post.id}`}>
-                        <div className="flex gap-1 items-center cursor-pointer">
-                          <LuMessageSquare className="w-5 h-5" />
-                          <span>{post.comments.length}</span>
-                        </div>
+                    <div className="flex">
+                      {/* <div className="flex gap-1 items-center cursor-pointer"> */}
+                      <Link
+                        className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                        href={`/posts/${post.id}`}
+                      >
+                        <LuMessageSquare className="w-5 h-5" />
+                        <span>{post.comments.length}</span>
                       </Link>
+                      {/* </div> */}
+
                       <div
-                        className="flex gap-1 items-center cursor-pointer"
+                        className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
                         onClick={() => shareLink(post.id)}
                       >
                         <LiaShareSolid className="w-5 h-5" />
                         <span>Share</span>
                       </div>
                       <div
-                        className="flex gap-1 items-center cursor-pointer"
+                        className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
                         onClick={() => {
                           deletePost(post.id);
                           toast({
@@ -148,31 +171,41 @@ const MyPosts = () => {
                         <LuBan className="w-5 h-5" />
                         <span>Remove</span>
                       </div>
-                      <div
-                        onClick={() => {
-                          _saveItem({
-                            type: "post",
-                            postId: post.id,
-                          });
-                          toast({
-                            title: "SUCCESS",
-                            description: `Bookmarked ${post.title}`,
-                          });
-                        }}
-                        className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
-                      >
-                        {post?.isBookmarked ? (
-                          <>
-                            <MdBookmark className="w-4 h-4" />
-                            <span>Saved</span>
-                          </>
-                        ) : (
-                          <>
-                            <LuBookmarkPlus className="w-4 h-4" />
-                            <span>Save</span>
-                          </>
-                        )}
-                      </div>
+                      {post.isBookmarked ? (
+                        <div
+                          onClick={() => {
+                            _unbookmarkItem({
+                              type: "post",
+                              postId: post.id,
+                            });
+                            toast({
+                              title: "SUCCESS",
+                              description: `Unbookmarked ${post.title}`,
+                            });
+                          }}
+                          className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                        >
+                          <MdBookmark className="w-5 h-5" />
+                          <span>Saved</span>
+                        </div>
+                      ) : (
+                        <div
+                          onClick={() => {
+                            _saveItem({
+                              type: "post",
+                              postId: post.id,
+                            });
+                            toast({
+                              title: "SUCCESS",
+                              description: `Bookmarked ${post.title}`,
+                            });
+                          }}
+                          className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
+                        >
+                          <LuBookmarkPlus className="w-5 h-5" />
+                          <span>Save</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
