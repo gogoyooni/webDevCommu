@@ -20,7 +20,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const MyPosts = () => {
   const { data: session } = useSession();
-
+  const queryClient = useQueryClient();
   if (!session?.user) {
     redirect("/");
   }
@@ -41,7 +41,6 @@ const MyPosts = () => {
   } = useMutation({
     mutationFn: bookmark,
     onSuccess: () => {
-      const queryClient = useQueryClient();
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["bookmark"] });
     },
