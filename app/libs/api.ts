@@ -266,6 +266,29 @@ export async function deleteProject(data: any) {
   }).then((res) => res.json());
 }
 
+// @ ProjectLike - when users like or are interested in a project
+export async function likeProject(projectId: string) {
+  // const { projectId } = data;
+  return fetch(`${BASE_URL}/api/likes/project`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(projectId),
+  }).then((res) => res.json());
+}
+// @ ProjectLike - when users unlike or are not interested in a project
+export async function unlikeProject(projectId: string) {
+  // const { projectId } = data;
+  return fetch(`${BASE_URL}/api/likes/project`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(projectId),
+  }).then((res) => res.json());
+}
+
 // @ Project application - apply for a project (create an application as a user)
 export async function createApplication(data: any, projectId: string) {
   // const { userName, teamName } = params;

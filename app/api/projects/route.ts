@@ -46,6 +46,11 @@ export async function GET(req: NextRequest) {
               },
             },
           },
+          _count: {
+            select: {
+              projectLikes: true,
+            },
+          },
         },
       });
 
@@ -72,6 +77,14 @@ export async function GET(req: NextRequest) {
               name: true,
             },
           },
+          projectLikes: {
+            where: {
+              userId: user.id,
+            },
+            select: {
+              userId: true,
+            },
+          },
           techStacks: {
             select: {
               techStack: {
@@ -96,6 +109,11 @@ export async function GET(req: NextRequest) {
               },
             },
           },
+          _count: {
+            select: {
+              projectLikes: true,
+            },
+          },
         },
       });
 
@@ -114,6 +132,7 @@ export async function GET(req: NextRequest) {
         return {
           ...project,
           isBookmarked: bookmarkedProjects.some((bp: any) => bp.projectId === project.id),
+          isLiked: project.projectLikes.some((like: any) => like.userId === user.id),
         };
       });
 
