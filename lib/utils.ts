@@ -32,13 +32,23 @@ export function foramtDate(date: any) {
   return format(d, "PPP EEE p", { locale: enUS }); // 날짜 포맷
 }
 
-export function shareLink(postId: string) {
+export function shareLink(data: { postId: string | null; projectId: string | null; type: string }) {
+  const { postId, projectId, type } = data;
+
+  let currentURL;
+
+  if (type == "post") {
+    currentURL = `${window.location.origin}/posts/${postId}`;
+  }
+
+  if (type == "project") {
+    currentURL = `${window.location.origin}/projects/${projectId}`;
+  }
   // Get the current URL
-  const currentURL = `${window.location.origin}/posts/${postId}`;
 
   // Create a temporary input element
   const tempInput = document.createElement("input");
-  tempInput.value = currentURL;
+  tempInput.value = currentURL as string;
 
   // Append the input element to the document
   document.body.appendChild(tempInput);

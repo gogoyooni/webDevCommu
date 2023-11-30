@@ -25,6 +25,7 @@ model User {
   posts               Post[]
   comments            Comment[]
   likes               Like[]
+  projectLikes        ProjectLike[]
   // sentInvitations     Notification[] @relation("SentInvitations")
   // receivedInvitations Notification[] @relation("ReceivedInvitations")
   sentNotifications     Notification[] @relation("SentNotifications")
@@ -97,6 +98,17 @@ model Like {
   post      Post?    @relation(fields: [postId], references: [id])
   commentId String?
   comment   Comment? @relation(fields: [commentId], references: [id])
+}
+
+
+model ProjectLike {
+  id      String @id @default(cuid())
+  projectId String
+  userId  String
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum NotificationType {
@@ -178,6 +190,7 @@ model Project {
   techStacks ProjectTechStack[]
   appliedProjects ProjectApplication[]
   bookmarkedBy     BookmarkedProject[]
+  projectLikes ProjectLike[]
 }
 
 // Add a new model for bookmarked projects

@@ -32,6 +32,21 @@ export async function GET(req: NextRequest) {
       where: {
         userId: user.id,
       },
+      include: {
+        post: {
+          select: {
+            likes: true,
+            comments: true,
+            title: true,
+            // createdAt: true,
+            author: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json({ message: "SUCCESS", response: postBookmarks }, { status: 200 });
@@ -42,6 +57,19 @@ export async function GET(req: NextRequest) {
     const projectBookmarks = await prisma.bookmarkedProject.findMany({
       where: {
         userId: user.id,
+      },
+      include: {
+        project: {
+          select: {
+            title: true,
+            leader: {
+              select: {
+                name: true,
+              },
+            },
+            appliedProjects: true,
+          },
+        },
       },
     });
 
