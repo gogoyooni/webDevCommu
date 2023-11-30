@@ -153,7 +153,9 @@ const MyPosts = () => {
 
                       <div
                         className="p-2 flex gap-1 items-center text-muted-foreground text-sm rounded-sm hover:bg-slate-200 transition-colors ease-in cursor-pointer"
-                        onClick={() => shareLink(post.id)}
+                        onClick={() =>
+                          shareLink({ postId: post.id, projectId: null, type: "post" })
+                        }
                       >
                         <LiaShareSolid className="w-5 h-5" />
                         <span>Share</span>
