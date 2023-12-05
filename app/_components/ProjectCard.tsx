@@ -1,12 +1,11 @@
-import { foramtDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-import TechStack from "./TechStack";
+import { foramtDate } from "@/lib/utils";
 
+import TechStack from "./TechStack";
 import UnbookmarkBtn from "./UnbookmarkBtn";
 import BookmarkBtn from "./BookmarkBtn";
-import { LuHeart } from "react-icons/lu";
 import ProjectLikeBtn from "./ProjectLikeBtn";
 import ProjectUnlikeBtn from "./ProjectUnlikeBtn";
 
@@ -26,7 +25,7 @@ const ProjectCard = ({ project }: { project: any }) => {
           <span>{project?._count?.projectLikes}</span>
         </div>
         <div>
-          <div className="flex items-center text-sm pb-2">
+          <div className="flex items-center text-sm ">
             {/* <span className="font-bold">{post.author.name}</span> */}
             <div className="flex gap-2">
               <span className="text-sm text-muted-foreground">Led by {project?.leader?.name}</span>

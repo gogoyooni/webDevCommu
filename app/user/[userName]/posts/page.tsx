@@ -136,8 +136,10 @@ const MyPosts = () => {
                   <div>
                     <p className="text-md">{post.title}</p>
                     <div className="flex gap-1 text-sm pb-4">
-                      <span className="font-bold">{post.author.name}</span>
-                      <span>Posted by {post.author.name}</span>
+                      {/* <span className="font-bold">{post.author.name}</span> */}
+                      <span>
+                        Posted by <span className="font-bold">{post.author.name}</span>
+                      </span>
                       <span>{foramtDate(post.createdAt)}</span>
                     </div>
                     <div className="flex">

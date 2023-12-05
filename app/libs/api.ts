@@ -38,8 +38,8 @@ export async function getPost(postId: string) {
   }).then((res) => res.json());
 }
 
-export async function getPosts() {
-  return fetch(`${BASE_URL}/api/posts`, {
+export async function getPosts(lastCursor: string) {
+  return fetch(`${BASE_URL}/api/posts?lastCursor=${lastCursor}`, {
     cache: "no-store",
   }).then((res) => res.json());
 }
