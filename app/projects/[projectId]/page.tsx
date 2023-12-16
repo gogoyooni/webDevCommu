@@ -14,6 +14,7 @@ import { cancelApplication } from "@/app/libs/api";
 import { toast } from "@/components/ui/use-toast";
 import { foramtDate } from "@/lib/utils";
 import Loader from "@/app/_components/Loader";
+import Backdrop from "@/app/_components/Backdrop";
 
 const Project = ({ params }: { params: { projectId: string } }) => {
   const queryClient = useQueryClient();
@@ -87,7 +88,8 @@ const Project = ({ params }: { params: { projectId: string } }) => {
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-4 pb-9">
       {isLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
+        // <Loader className="mx-auto w-10 h-10 animate-spin" />
+        <Backdrop />
       ) : (
         <div className="flex justify-center gap-5">
           <div className="">

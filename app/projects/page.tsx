@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import NoProject from "../_components/NoProject";
 
 import ProjectCard from "../_components/ProjectCard";
+import Backdrop from "../_components/Backdrop";
 
 const Projects = () => {
   const { data: session } = useSession();
@@ -20,8 +21,9 @@ const Projects = () => {
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {isLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
+        <Backdrop />
       ) : (
+        // <Loader className="mx-auto w-10 h-10 animate-spin" />
         <div className="mx-auto max-w-6xl">
           <div className="mb-2 relative">
             <h3 className="text-2xl font-semibold">

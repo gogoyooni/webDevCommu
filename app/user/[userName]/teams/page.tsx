@@ -57,6 +57,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import Backdrop from "@/app/_components/Backdrop";
 
 const Teams = () => {
   const { data, error, isLoading } = useGetTeams();
@@ -155,7 +156,8 @@ const Teams = () => {
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {/* <p>{session?.user?.name}의 팀들 입니다.</p> */}
       {isLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
+        // <Loader className="mx-auto w-10 h-10 animate-spin" />
+        <Backdrop />
       ) : (
         <>
           <div className="mx-auto max-w-6xl">

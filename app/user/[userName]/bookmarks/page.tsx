@@ -1,5 +1,6 @@
 "use client";
 
+import Backdrop from "@/app/_components/Backdrop";
 import BookmarkedPost from "@/app/_components/BookmarkedPost";
 import BookmarkedProject from "@/app/_components/BookmarkedProject";
 import Loader from "@/app/_components/Loader";
@@ -63,7 +64,8 @@ const Bookmarks = () => {
           <TabsContent value="post">
             <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
               {isLoading ? (
-                <Loader className="mx-auto w-8 h-8 animate-spin" />
+                // <Loader className="mx-auto w-8 h-8 animate-spin" />
+                <Backdrop />
               ) : data?.response?.length === 0 ? (
                 <div className="text-muted-foreground relative min-h-[80px]">
                   <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex gap-2  items-center ">
@@ -87,7 +89,8 @@ const Bookmarks = () => {
           <TabsContent value="project">
             <div className="my-2 w-[700px] bg-white shadow-md p-4 rounded-lg border-zinc-100 border-[1px]">
               {isLoading ? (
-                <Loader className="mx-auto w-8 h-8 animate-spin" />
+                // <Loader className="mx-auto w-8 h-8 animate-spin" />
+                <Backdrop />
               ) : data?.response?.length === 0 ? (
                 <div className="text-muted-foreground relative min-h-[80px]">
                   <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex gap-2  items-center ">

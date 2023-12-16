@@ -11,12 +11,11 @@ import { UseMutationResult, useMutation, useQueryClient } from "@tanstack/react-
 import { useSession } from "next-auth/react";
 
 import { LuNavigation, LuSailboat, LuCrown, LuCupSoda, LuFolderPlus } from "react-icons/lu";
-import {} from "react-icons/lu";
-import {} from "react-icons/lu";
 
 import Image from "next/image";
 import ProjectAction from "@/app/_components/ProjectAction";
 import Loader from "@/app/_components/Loader";
+import Backdrop from "@/app/_components/Backdrop";
 
 const Projects = ({ params }: { params: { userName: string } }) => {
   const { userName } = params;
@@ -127,7 +126,8 @@ const Projects = ({ params }: { params: { userName: string } }) => {
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-4 pb-9">
       {isLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
+        // <Loader className="mx-auto w-10 h-10 animate-spin" />
+        <Backdrop />
       ) : (
         <>
           {/* <h3>{`/user/${decodeURIComponent(userName)}/projects`}</h3> */}

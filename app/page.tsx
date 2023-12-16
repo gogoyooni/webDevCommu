@@ -22,11 +22,12 @@ import { foramtDate, shareLink } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { bookmark, getPosts, unbookmark } from "./libs/api";
 import { MdBookmark } from "react-icons/md";
-import LoadMore from "./_components/LoadMore";
+// import LoadMore from "./_components/LoadMore";
 
 import { useInView } from "react-intersection-observer";
 
 import { useEffect, useState } from "react";
+import Backdrop from "./_components/Backdrop";
 
 export default function Home() {
   // const [nextPage, setNextPage] = useState<number>(0);
@@ -148,8 +149,9 @@ export default function Home() {
     <div className="mx-auto bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {/* {isLoading ? ( */}
       {status === "pending" ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin " />
+        <Backdrop />
       ) : (
+        // <Loader className="mx-auto w-10 h-10 animate-spin " />
         <div className="mx-auto max-w-2xl">
           {session?.user && (
             <div className="flex items-center p-3 gap-3 rounded-md border bg-card text-card-foreground shadow w-full my-2">

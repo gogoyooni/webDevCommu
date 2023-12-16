@@ -22,9 +22,9 @@ import { foramtDate, shareLink } from "@/lib/utils";
 import { LiaShareSolid } from "react-icons/lia";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
 import Loader from "@/app/_components/Loader";
 import Comment from "@/app/_components/Comment";
+import Backdrop from "@/app/_components/Backdrop";
 
 const Post = ({ params }: { params: { postId: string } }) => {
   const { data: session } = useSession();
@@ -115,8 +115,9 @@ const Post = ({ params }: { params: { postId: string } }) => {
   return (
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {postIsLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
+        <Backdrop />
       ) : (
+        // <Loader className="mx-auto w-10 h-10 animate-spin" />
         <div className="mx-auto max-w-3xl">
           <div className="bg-white shadow-md p-3 rounded-lg border-zinc-100 border-[1px]">
             <div className="flex justify-between">

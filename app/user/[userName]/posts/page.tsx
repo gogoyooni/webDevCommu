@@ -17,6 +17,7 @@ import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { bookmark, unbookmark } from "@/app/libs/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Backdrop from "@/app/_components/Backdrop";
 
 const MyPosts = () => {
   const { data: session } = useSession();
@@ -113,7 +114,8 @@ const MyPosts = () => {
     // <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
     <div className="bg-[#F5F5F5] w-full min-h-screen max-h-full pt-6 pb-9">
       {isLoading ? (
-        <Loader className="mx-auto w-10 h-10 animate-spin" />
+        // <Loader className="mx-auto w-10 h-10 animate-spin" />
+        <Backdrop />
       ) : (
         <div className="mx-auto max-w-6xl">
           <div className="mb-2">
