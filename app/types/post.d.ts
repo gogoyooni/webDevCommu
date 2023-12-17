@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 
-export interface Post {
+export interface PostType {
   id: string;
   title: string;
   content: string;
