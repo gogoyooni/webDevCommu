@@ -1,11 +1,6 @@
 "use client";
 
-import Link from "next/link";
-// import { useGetPosts } from "./hooks";
 import { PostType } from "@/app/types/post";
-
-import { LuMessageSquare, LuBookmarkPlus } from "react-icons/lu";
-import { LiaShareSolid } from "react-icons/lia";
 
 import { useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";

@@ -203,8 +203,8 @@ export async function getProject(projectId: string) {
 }
 
 // @ Project - Get all projects
-export async function getProjects() {
-  return fetch(`${BASE_URL}/api/projects`, {
+export async function getProjects(lastCursor: string) {
+  return fetch(`${BASE_URL}/api/projects?lastCursor=${lastCursor}`, {
     cache: "no-store",
   }).then((res) => res.json());
 }
