@@ -121,7 +121,7 @@ export default function Home() {
           <div>
             {/* {data?.data?.map((post: Post) => ( */}
             {infiniteData?.pages?.map((page: any) =>
-              page?.data?.map((post: PostType) => <Post post={post} />)
+              page?.data?.map((post: PostType) => <Post key={post?.id} post={post} />)
             )}
           </div>
           {hasNextPage && (
