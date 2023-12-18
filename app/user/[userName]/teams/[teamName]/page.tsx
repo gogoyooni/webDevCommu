@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateProject, useGetProjects, useGetUserProjects } from "@/app/hooks";
+import { useCreateProject, useGetUserProjects } from "@/app/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSession } from "next-auth/react";
