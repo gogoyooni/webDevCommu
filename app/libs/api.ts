@@ -41,6 +41,7 @@ export async function getPost(postId: string) {
 export async function getPosts(lastCursor: string) {
   return fetch(`${BASE_URL}/api/posts?lastCursor=${lastCursor}`, {
     cache: "no-store",
+    mode: "no-cors",
   }).then((res) => res.json());
 }
 
@@ -197,7 +198,6 @@ export async function cancelInvitationAsLeader(data: any) {
 // @ Project -  Get a project for project detailed page
 export async function getProject(projectId: string) {
   return fetch(`${BASE_URL}/api/projects/${projectId}`, {
-    // return fetch(`${BASE_URL}/api/projects/`, {
     cache: "no-store",
   }).then((res) => res.json());
 }
@@ -206,6 +206,7 @@ export async function getProject(projectId: string) {
 export async function getProjects(lastCursor: string) {
   return fetch(`${BASE_URL}/api/projects?lastCursor=${lastCursor}`, {
     cache: "no-store",
+    mode: "no-cors",
   }).then((res) => res.json());
 }
 

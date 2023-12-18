@@ -14,6 +14,14 @@ import { useEffect } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getProjects } from "../libs/api";
 
+import type { Metadata } from "next";
+
+function generateMetadata(): Metadata {
+  return {
+    title: "Next.js",
+  };
+}
+
 const Projects = () => {
   const { ref, inView, entry } = useInView();
   const { data: session } = useSession();
